@@ -1,22 +1,24 @@
-FROM ubuntu:latest
-LABEL authors="krystianpietron"
-
-# Użyj oficjalnego obrazu bazowego Home Assistant OS dla Pythona
-# Wybierz wersję Pythona, która Ci odpowiada. Poniżej przykład z 3.12
-FROM ghcr.io/home-assistant/amd64-base-python:3.12
+# Bazowy obraz z Pythonem 3.12 (lekkie slim)
+FROM python:3.12-slim
 
 # Ustaw katalog roboczy w kontenerze
 WORKDIR /app
 
-# Skopiuj plik requirements.txt (jeśli istnieje) i zainstaluj zależności
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gcc \
+    python3-dev \
+    libffi-dev \
+    libusb-1.0-0-dev \
+    && rm -rf /var/lib/apt/lists/*
+# Skopiuj plik z zależnościami (jeśli masz)
 COPY requirements.txt .
-RUN pip install -r requirements.txt || true
 
-# Skopiuj wszystkie pliki z katalogu dodatku do katalogu roboczego w kontenerze
-COPY .. .
+# Zainstaluj wymagane pakiety Pythona
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Ustaw uprawnienia dla skryptu startowego
-RUN chmod +x run.sh
+# Skopiuj cały kod dodatku do kontenera
+COPY . .
 
-# Użyj skryptu run.sh jako punktu wejścia (entrypoint) kontenera
-ENTRYPOINT ["/bin/bash", "run.sh"]
+# Domyślne polecenie uruchamiające (zmień na swój skrypt lub komendę)
+CMD ["python", "main.py"]
