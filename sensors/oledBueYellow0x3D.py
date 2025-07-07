@@ -10,7 +10,7 @@ from sensors.ram import RamUsage
 from sensors.timer import Timer
 
 
-class Oled0x3d:
+class OledBlueYellow0x3d:
     def __init__(self):
         self.base_lines = []  # dane systemowe
         self.display_text = None

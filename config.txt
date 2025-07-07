@@ -1,0 +1,13 @@
+{
+  "name": "i2c addon",
+  "version": "1.0.0",
+  "slug": "i2c_addon",
+  "description": "Obsługa wyświetlaczy i2c",
+  "arch": ["aarch64", "amd64", "armhf", "armv7", "i386"],
+  "url": "https://github.com/TwojaNazwaUzytkownika/my-homeassistant-addons/tree/main/my-addon-folder",
+  "startup": "application",
+  "boot": "auto",
+  "options": {},
+  "schema": {},
+  "image": "ghcr.io/TwojaNazwaUzytkownika/my_first_python_addon/{arch}"
+}

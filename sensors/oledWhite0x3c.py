@@ -3,22 +3,20 @@ from luma.oled.device import ssd1306
 import os
 import asyncio
 import logging
-
-from display.images import Images
-from display.matrix_anim import Matrix
 from sensors.tge import TGEPriceDisplay
 
 
-class Oled0x3c:
-    def __init__(self):
+class OledWhite0x3c:
+    def __init__(self, port=13, address=0x3c):
         # Inicjalizacja luma.oled z podaniem numeru bussa i adresu
-        serial = i2c(port=13, address=0x3c)
+        serial = i2c(port=port, address=address)
         self.device = ssd1306(serial, width=128, height=64)
 
         self.IMG_PATH_RASPBERRY = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets', 'raspberry_logo.bmp'))
         self.IMG_PATH_DEBIAN = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets', 'debian_logo.bmp'))
 
         self.display_lock = asyncio.Lock()
+
 
     async def run(self):
         home_assistant_url = "http://192.168.1.226:8123"
@@ -28,33 +26,16 @@ class Oled0x3c:
         async with self.display_lock:
             self.device.clear()
             self.device.show()
-
-        matrix = Matrix(self.device)
-        images = Images(self.device)
         tge = TGEPriceDisplay(self.device, home_assistant_url, home_assistant_token)
 
         try:
             logging.info(f"📂 Katalog roboczy: {os.getcwd()}")
 
             while True:
-                logging.info("🖼️ Wyświetlanie Matrix")
-                await matrix.matrix_rain(duration=10, display_lock=self.display_lock)
-
-                logging.info("🖼️ Wyświetlanie Raspberry logo")
-                async with self.display_lock:
-                    # images.display_image powinno robić device.display(image)
-                    images.display_image(self.IMG_PATH_RASPBERRY)
-                await asyncio.sleep(10)
-
-                logging.info("🖼️ Wyświetlanie Debian logo")
-                async with self.display_lock:
-                    images.display_image(self.IMG_PATH_DEBIAN)
-                await asyncio.sleep(10)
-
                 logging.info("🖼️ Wyświetlanie TGE")
                 async with self.display_lock:
                     await tge.draw_once()
                 await asyncio.sleep(60)
 
         except Exception as e:
-            logging.error(f"Błąd w run_display2: {e}", exc_info=True)
+            logging.error(f"Błąd w run_display1 White: {e}", exc_info=True)
