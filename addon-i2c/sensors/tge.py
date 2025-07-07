@@ -2,7 +2,7 @@ import logging
 import requests
 from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
-import asyncio
+
 
 class TGEPriceDisplay:
     def __init__(self, display, ha_url, token, entity_id="sensor.tge_fixing_1_rate"):

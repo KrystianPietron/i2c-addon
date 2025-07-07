@@ -13,7 +13,7 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt || true
 
 # Skopiuj wszystkie pliki z katalogu dodatku do katalogu roboczego w kontenerze
-COPY . .
+COPY .. .
 
 # Ustaw uprawnienia dla skryptu startowego
 RUN chmod +x run.sh
