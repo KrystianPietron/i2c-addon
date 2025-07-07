@@ -4,10 +4,15 @@
   "slug": "i2c_addon",
   "description": "Obsługa wyświetlaczy i2c",
   "arch": ["aarch64", "amd64", "armhf", "armv7", "i386"],
-  "url": "https://github.com/TwojaNazwaUzytkownika/my-homeassistant-addons/tree/main/my-addon-folder",
+  "url": "https://github.com/KrystianPietron/i2c-addon",
   "startup": "application",
   "boot": "auto",
   "options": {},
   "schema": {},
-  "image": "ghcr.io/TwojaNazwaUzytkownika/my_first_python_addon/{arch}"
+  "devices": [
+    "/dev/i2c-1:/dev/i2c-1:rwm",
+    "/dev/i2c-13:dev/i2c-13:rwm"
+  ],
+  "privileged": false,
+  "image": "ghcr.io/KrystianPietron/my_first_python_addon/{arch}"
 }
