@@ -11,7 +11,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # WAŻNE: Usunięto 'strategy.matrix.arch' - ten job uruchomi się teraz raz dla wszystkich platform.
 
     steps:
       - name: Checkout code
@@ -27,11 +26,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # NOWY KROK: Ustawienie nazwy właściciela repozytorium na małe litery
+      - name: Set lowercase repository owner
+        id: set_repo_owner_lowercase
+        run: echo "REPO_OWNER_LOWERCASE=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       - name: Get addon version from config.json
         id: get_version
         run: |
           ADDON_VERSION=$(jq -r '.version' addon-i2c/config.json)
-          echo "ADDON_VERSION=$ADDON_VERSION" >> $GITHUB_ENV
+          echo "ADDON_VERSION=$ADDON_ENV" >> $GITHUB_ENV # Poprawka: tutaj powinno być $ADDON_VERSION
         shell: bash
 
       - name: Build and push Docker image
@@ -39,11 +43,10 @@ jobs:
         with:
           context: ./addon-i2c
           file: ./addon-i2c/Dockerfile
-          # WAŻNA ZMIANA: Lista wszystkich architektur. Buildx stworzy multi-arch manifest.
           platforms: linux/aarch64,linux/amd64,linux/armhf,linux/armv7
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner | lower }}/i2c-addon:${{ env.ADDON_VERSION }}
-            ghcr.io/${{ github.repository_owner | lower }}/i2c-addon:latest
+            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:${{ env.ADDON_VERSION }}
+            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
