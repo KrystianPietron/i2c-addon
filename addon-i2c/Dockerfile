@@ -1,24 +1,24 @@
 # Dockerfile
-ARG BUILD_FROM
 
-# Standardowa deklaracja FROM z użyciem BUILD_FROM
+# Domyślna wartość, jeśli nie podasz BUILD_FROM w build args
+ARG BUILD_FROM=debian:bookworm-slim
+
+# Użyj platformy z BuildKit
 FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
 
-# Ustawienie powłoki dla wszystkich kolejnych komend RUN
+# Ustaw powłokę sh
 SHELL ["/bin/sh", "-c"]
 
 # Ustaw katalog roboczy
 WORKDIR /app
 
-# Kopiowanie plików rootfs (jeśli istnieją i utworzyłeś ten folder)
-COPY rootfs /
-
-# Kopiowanie requirements.txt
+# Kopiuj pliki (np. skrypty, rootfs)
+COPY rootfs /  # jeśli nie masz — możesz usunąć
 COPY requirements.txt .
 
-# Instalacja zależności systemowych
-RUN DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get update && \
-    DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get install -y --no-install-recommends \
+# Instaluj zależności systemowe
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     build-essential \
     gcc \
     python3-dev \
@@ -45,15 +45,14 @@ RUN DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get update && \
     liblapack-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Zainstaluj wymagane pakiety Pythona, zapisując logi do pliku, a następnie wyświetlając go
-RUN pip install -v --no-cache-dir -r requirements.txt 2>&1 | tee pip_install_log.txt || true && \
-    cat pip_install_log.txt
+# Instaluj pip dependencies
+RUN pip install -v --no-cache-dir -r requirements.txt
 
-# Skopiuj cały kod dodatku do kontenera
+# Skopiuj całość kodu
 COPY . .
 
-# Upewnij się, że skrypt run.sh jest wykonywalny
+# Upewnij się, że run.sh jest wykonywalny
 RUN chmod +x /app/run.sh
 
-# Definiuje punkt wejścia do kontenera. Standardowo w HA jest to skrypt run.sh
+# Domyślny entrypoint
 CMD ["/app/run.sh"]
