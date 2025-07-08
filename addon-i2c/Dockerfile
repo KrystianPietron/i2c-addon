@@ -16,8 +16,7 @@ COPY rootfs /
 # Kopiowanie requirements.txt
 COPY requirements.txt .
 
-# Instalacja zależności systemowych
-# KLUCZOWA ZMIANA: Dodano więcej pakietów, w tym dla luma.oled i ogólnej stabilności kompilacji
+# Instalacja zależności systemowych (zostawiamy rozszerzoną listę z poprzedniego kroku)
 RUN DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get update && \
     DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get install -y --no-install-recommends \
     build-essential \
@@ -27,33 +26,28 @@ RUN DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get update && \
     libusb-1.0-0-dev \
     libgpiod-dev \
     python3 python3-pip \
-    # Biblioteki dla Pillow i obsługi obrazów
     libjpeg-dev \
     zlib1g-dev \
     libtiff-dev \
     libfreetype6-dev \
-    # Biblioteki dla luma.oled i interakcji z hardware
     i2c-tools \
     python3-smbus \
-    # Upewniamy się, że podstawowe narzędzia są zainstalowane
     pkg-config \
     libxml2-dev \
     libxslt1-dev \
     automake \
     autoconf \
     libtool \
-    # Bardziej ogólne pakiety deweloperskie i biblioteki pomocnicze
     ca-certificates \
     curl \
     gnupg \
-    # Czasami wymagane przez skomplikowane pakiety Pythona
     libopenblas-dev \
     liblapack-dev \
-    # Usuwamy listy pakietów APT, aby zmniejszyć rozmiar obrazu
     && rm -rf /var/lib/apt/lists/*
 
-# Zainstaluj wymagane pakiety Pythona
-RUN pip install --no-cache-dir -r requirements.txt
+# Zainstaluj wymagane pakiety Pythona z trybem verbose
+# KLUCZOWA ZMIANA: Dodano -v (verbose)
+RUN pip install -v --no-cache-dir -r requirements.txt
 
 # Skopiuj cały kod dodatku do kontenera
 COPY . .
