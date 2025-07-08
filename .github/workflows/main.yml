@@ -49,3 +49,6 @@ jobs:
             ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          # WAŻNA ZMIANA: Dodajemy argumenty budowania dla Dockerfile
+          build-args: |
+            BUILD_FROM=homeassistant/amd64-base:latest
