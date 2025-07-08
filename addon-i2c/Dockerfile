@@ -13,7 +13,7 @@ SHELL ["/bin/sh", "-c"]
 WORKDIR /app
 
 # Kopiuj pliki (np. skrypty, rootfs)
-COPY rootfs /  # jeśli nie masz — możesz usunąć
+COPY rootfs /
 COPY requirements.txt .
 
 # Instaluj zależności systemowe
