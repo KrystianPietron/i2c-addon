@@ -19,7 +19,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Tylko architektura aarch64 (arm64)
           - arch: aarch64
             docker_platform: linux/arm64/v8
 
@@ -87,28 +86,26 @@ jobs:
           echo "ADDON_VERSION=$ADDON_VERSION" >> $GITHUB_ENV
         shell: bash
 
+      # ZWIĘKSZONE OPÓŹNIENIE
       - name: Wait for images to be available
-        run: sleep 15 # Odczekaj 15 sekund
+        run: sleep 30 # Odczekaj 30 sekund
         shell: bash
 
       - name: Create manifest list and push
         run: |
-          MANIFEST_TAG=ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:${{ env.ADDON_VERSION }}
-          LATEST_TAG=ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:latest
+          MANIFEST_BASE=ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon
+          ADDON_VERSION=${{ env.ADDON_VERSION }}
+          ARCH_IMAGE="${MANIFEST_BASE}-aarch64:${ADDON_VERSION}"
 
-          IMAGES_TO_MANIFEST=(
-            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon-aarch64:${{ env.ADDON_VERSION }}
-          )
+          echo "Attempting to pull individual image to ensure availability..."
+          docker pull "${ARCH_IMAGE}" # Spróbuj pobrać, aby wymusić indeksowanie/dostępność
+          echo "Pull successful or image already available."
 
-          echo "Creating manifest for ${MANIFEST_TAG} with images: ${IMAGES_TO_MANIFEST[@]}"
-          docker manifest create ${MANIFEST_TAG} ${IMAGES_TO_MANIFEST[@]}
+          echo "Creating manifest for ${MANIFEST_BASE}:${ADDON_VERSION} with image: ${ARCH_IMAGE}"
+          docker manifest create ${MANIFEST_BASE}:${ADDON_VERSION} ${ARCH_IMAGE}
+          docker manifest push ${MANIFEST_BASE}:${ADDON_VERSION}
 
-          echo "Pushing manifest ${MANIFEST_TAG}"
-          docker manifest push ${MANIFEST_TAG}
-
-          echo "Creating manifest for ${LATEST_TAG} with images: ${IMAGES_TO_MANIFEST[@]}"
-          docker manifest create ${LATEST_TAG} ${IMAGES_TO_MANIFEST[@]}
-
-          echo "Pushing manifest ${LATEST_TAG}"
-          docker manifest push ${LATEST_TAG}
+          echo "Creating manifest for ${MANIFEST_BASE}:latest with image: ${ARCH_IMAGE}"
+          docker manifest create ${MANIFEST_BASE}:latest ${ARCH_IMAGE}
+          docker manifest push ${MANIFEST_BASE}:latest
         shell: bash
