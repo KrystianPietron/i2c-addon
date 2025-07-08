@@ -49,36 +49,26 @@ RUN DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get update && \
 RUN pip install -v --no-cache-dir -r requirements.txt 2>&1 | tee pip_install_log.txt || true && \
     cat pip_install_log.txt
 
-# --- KLUCZOWE ZMIANY DLA run.sh ---
+# Skopiuj cały kod dodatku do kontenera. To ważne, żeby run.sh był już na miejscu
+# i jego uprawnienia zostaną ustawione PÓŹNIEJ.
+COPY . .
 
-# 1. Agresywne kopiowanie i usuwanie:
-# Upewniamy się, że kopiujemy odpowiedni plik i resetujemy jego stan
-COPY run.sh /app/run.sh.tmp
-RUN rm -f /app/run.sh # Usuń wszelkie stare wersje
-RUN mv /app/run.sh.tmp /app/run.sh # Zastąp prawidłowym plikiem
-
-# 2. Diagnostyka przed konwersją:
-RUN echo "--- Diagnostyka run.sh PRZED konwersją ---" && \
-    ls -la /app/run.sh && \
-    file /app/run.sh && \
-    head -n 2 /app/run.sh | cat -v # Pokaż początek pliku z widocznymi znakami kontrolnymi
-
-# 3. Agresywna konwersja i uprawnienia:
-# Użyj sed, żeby usunąć znak powrotu karetki (CR) - to jest najbardziej niezawodne
-RUN sed -i 's/\r$//' /app/run.sh && \
-    dos2unix /app/run.sh && \
-    chmod +x /app/run.sh
-
-# 4. Diagnostyka po konwersji:
-RUN echo "--- Diagnostyka run.sh PO konwersji ---" && \
+# --- KLUCZOWA ZMIANA: Przenieś konwersję i chmod +x TUTAJ ---
+# Teraz, po skopiowaniu WSZYSTKIEGO, upewnij się, że run.sh ma poprawne uprawnienia i format.
+RUN echo "--- Finalna weryfikacja i ustawienie uprawnień dla run.sh ---" && \
     ls -la /app/run.sh && \
     file /app/run.sh && \
     head -n 2 /app/run.sh | cat -v && \
-    echo "--- Koniec diagnostyki run.sh ---"
+    sed -i 's/\r$//' /app/run.sh && \
+    dos2unix /app/run.sh && \
+    chmod +x /app/run.sh && \
+    echo "--- Weryfikacja po konwersji i chmod +x ---" && \
+    ls -la /app/run.sh && \
+    file /app/run.sh && \
+    head -n 2 /app/run.sh | cat -v && \
+    echo "--- Koniec finalnej weryfikacji run.sh ---"
 # --- KONIEC KLUCZOWYCH ZMIAN ---
 
-# Skopiuj resztę kodu dodatku (oprócz run.sh, który już skopiowaliśmy)
-COPY . .
 
 # Definiuje punkt wejścia do kontenera. Standardowo w HA jest to skrypt run.sh
 CMD ["/app/run.sh"]
