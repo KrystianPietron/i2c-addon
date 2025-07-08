@@ -1,8 +1,6 @@
 # Dockerfile
 ARG BUILD_FROM=debian:bookworm-slim
 FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
-# Standardowa deklaracja FROM z użyciem BUILD_FROM
-FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
 
 # Ustawienie powłoki dla wszystkich kolejnych komend RUN
 SHELL ["/bin/sh", "-c"]
@@ -43,6 +41,8 @@ RUN DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get update && \
     gnupg \
     libopenblas-dev \
     liblapack-dev \
+    # Dodaj dos2unix do instalacji apt
+    dos2unix \
     && rm -rf /var/lib/apt/lists/*
 
 # Zainstaluj wymagane pakiety Pythona, zapisując logi do pliku, a następnie wyświetlając go
@@ -52,8 +52,8 @@ RUN pip install -v --no-cache-dir -r requirements.txt 2>&1 | tee pip_install_log
 # Skopiuj cały kod dodatku do kontenera
 COPY . .
 
-# Upewnij się, że skrypt run.sh jest wykonywalny
-RUN chmod +x /app/run.sh
+# Upewnij się, że skrypt run.sh jest wykonywalny ORAZ skonwertuj znaki końca linii
+RUN dos2unix /app/run.sh && chmod +x /app/run.sh
 
 # Definiuje punkt wejścia do kontenera. Standardowo w HA jest to skrypt run.sh
 CMD ["/app/run.sh"]
