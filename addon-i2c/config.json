@@ -14,8 +14,8 @@
   "options": {},
   "schema": {},
   "devices": [
-    "/dev/i2c-1:/dev/i2c-1:rwm",
-    "/dev/i2c-13:/dev/i2c-13:rwm"
+    "/dev/i2c-1",
+    "/dev/i2c-13"
   ],
   "url": "https://github.com/KrystianPietron/i2c-addon/tree/main/addon-i2c",
   "slug": "addon-i2c",
