@@ -1,0 +1,53 @@
+name: Build and Publish Addon
+
+on:
+  push:
+    branches:
+      - main # Uruchamia workflow przy pushu do gałęzi 'main'
+    paths:
+      - 'addon-i2c/**' # Uruchamia tylko jeśli pliki w folderze addon-i2c zostaną zmienione
+  workflow_dispatch: # Pozwala na ręczne uruchamianie workflowu z interfejsu GitHub
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: ["aarch64", "amd64", "armhf", "armv7", "i386"] # Buduje dla wszystkich architektur
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4 # Pobiera kod z repozytorium
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3 # Konfiguruje Buildx do budowania multi-arch
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }} # Używa wbudowanego tokena GitHub
+
+      - name: Get addon version from config.json
+        id: get_version
+        run: |
+          ADDON_VERSION=$(jq -r '.version' addon-i2c/config.json)
+          echo "ADDON_VERSION=$ADDON_VERSION" >> $GITHUB_ENV
+        shell: bash
+        # Musisz mieć zainstalowany 'jq' na obrazie, co nie zawsze jest domyślne.
+        # Alternatywnie można parsować JSON za pomocą Pythona lub po prostu ręcznie ustawiać wersję.
+        # Jeżeli masz problem z jq, pomiń ten krok i hardkoduj wersję w tagach poniżej.
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./addon-i2c # Ścieżka do folderu z Dockerfile
+          file: ./addon-i2c/Dockerfile # Ścieżka do Dockerfile
+          platforms: linux/${{ matrix.arch }} # Buduje dla konkretnej architektury
+          push: true # Wypycha obraz do GHCR
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/i2c-addon:${{ env.ADDON_VERSION }}-${{ matrix.arch }}
+            ghcr.io/${{ github.repository_owner }}/i2c-addon:latest-${{ matrix.arch }}
+          cache-from: type=gha # Używa cache'u GitHub Actions dla szybszych kompilacji
+          cache-to: type=gha,mode=max
