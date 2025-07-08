@@ -50,10 +50,7 @@ jobs:
             ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          # KLUCZOWA ZMIANA: Przekazujemy pełne nazwy obrazów bazowych dla każdej architektury
-          # To jest najczęstszy sposób radzenia sobie z różnymi tagami per arch.
+          # KLUCZOWA ZMIANA: Dynamiczne przekazywanie BUILD_FROM na podstawie platformy
           build-args: |
-            BUILD_FROM_LINUX_AARCH64=debian:bookworm-slim-arm64v8
-            BUILD_FROM_LINUX_AMD64=debian:bookworm-slim-amd64
-            BUILD_FROM_LINUX_ARMHF=debian:bookworm-slim-arm32v6
-            BUILD_FROM_LINUX_ARMV7=debian:bookworm-slim-arm32v7
+            BUILD_FROM=debian:bookworm-slim-${{ buildx.arch }}
+        
