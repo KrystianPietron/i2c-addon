@@ -1,6 +1,6 @@
 # Dockerfile
 # Zmieniamy obraz bazowy na Alpine Linux
-ARG BUILD_FROM=alpine:latest
+ARG BUILD_FROM=alpine:3.20
 FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
 
 # Ustawienie powłoki dla wszystkich kolejnych komend RUN
