@@ -22,11 +22,9 @@
   "image": "krystianpietron/i2c-addon-{arch}",
   "privileged": ["SYS_RAWIO"],
   "init": false,
-  "registries": [
-    {
-      "url": "ghcr.io",
-      "username": "KrystianPietron",
-      "password": "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"
+  "build": {
+    "args": {
+      "BUILD_FROM": "homeassistant/{arch}-base-python:3.12"
     }
-  ]
+  }
 }
