@@ -1,19 +1,23 @@
-# Dockerfile (przykład z Debianem)
-ARG BUILD_FROM="debian:stable-slim" # Ustaw domyślny obraz bazowy na Debiana
+# Dockerfile
+ARG BUILD_FROM
 ARG TARGETARCH
 
-# Zmiana obrazu bazowego
-FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
+# Wybierz odpowiedni obraz bazowy na podstawie TARGETARCH (architektura, dla której jest budowany obraz)
+FROM --platform=$BUILDPLATFORM debian:bookworm-slim-${TARGETARCH}
 
-SHELL ["/bin/sh", "-o", "pipefail", "-c"]
+# WAŻNA ZMIANA: Usunięto '-o pipefail'
+SHELL ["/bin/sh", "-c"]
 
+# Ustaw katalog roboczy
 WORKDIR /app
 
+# Kopiowanie plików rootfs (jeśli istnieją i utworzyłeś ten folder)
 COPY rootfs /
+
+# Kopiowanie requirements.txt
 COPY requirements.txt .
 
 # Instalacja zależności systemowych
-# To powinno zadziałać na debian:stable-slim
 RUN DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get update && \
     DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get install -y --no-install-recommends \
     build-essential \
@@ -22,15 +26,17 @@ RUN DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get update && \
     libffi-dev \
     libusb-1.0-0-dev \
     libgpiod-dev \
-    # Dodaj pythona i pip, jeśli nie są domyślnie w stable-slim
     python3 python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
 # Zainstaluj wymagane pakiety Pythona
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Skopiuj cały kod dodatku do kontenera
 COPY . .
 
+# Upewnij się, że skrypt run.sh jest wykonywalny
 RUN chmod +x /app/run.sh
 
+# Definiuje punkt wejścia do kontenera. Standardowo w HA jest to skrypt run.sh
 CMD ["/app/run.sh"]
