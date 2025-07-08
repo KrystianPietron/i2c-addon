@@ -39,8 +39,14 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 RUN python3 -m venv /app/venv && \
     /app/venv/bin/pip install --no-cache-dir -r requirements.txt
 
+COPY run.sh /app/run.sh
+
+# Teraz skopiuj resztę plików z katalogu kontekstu do /app
+# Użyjemy . /app/ aby upewnić się, że kopiowanie odbywa się do /app,
+# ale COPY . . również działa, jeśli WORKDIR jest poprawnie ustawiony.
+# W Twoim przypadku kontekst w GitHub Actions to ./addon-i2c
+COPY . /app/
 # Nadaj uprawnienia do wykonania stworzonemu plikowi
-COPY . .
-RUN chmod a+x run.sh
+RUN chmod a+x app/run.sh
 
 CMD [ "app/run.sh" ]
