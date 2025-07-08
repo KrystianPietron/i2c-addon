@@ -1,6 +1,8 @@
 ARG BUILD_FROM=debian:bookworm-slim
 FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
 
+WORKDIR /app
+
 COPY rootfs /
 COPY requirements.txt .
 
@@ -37,12 +39,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 RUN python3 -m venv /app/venv && \
     /app/venv/bin/pip install --no-cache-dir -r requirements.txt
 
-# Teraz skopiuj resztę plików z katalogu kontekstu do /app
-# Użyjemy . /app/ aby upewnić się, że kopiowanie odbywa się do /app,
-# ale COPY . . również działa, jeśli WORKDIR jest poprawnie ustawiony.
-# W Twoim przypadku kontekst w GitHub Actions to ./addon-i2c
-COPY * /
-COPY run.sh /
+# Nadaj uprawnienia do wykonania stworzonemu plikowi
+COPY .. /
 RUN chmod a+x /run.sh
 
 CMD [ "/run.sh" ]
