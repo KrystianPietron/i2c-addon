@@ -1,17 +1,11 @@
-# Argument BUILD_FROM jest dostarczany przez Home Assistant Supervisor
-ARG BUILD_FROM
-# Bazowy obraz dostarczony przez Home Assistant
-FROM ${BUILD_FROM}
-
-# Ustaw katalog roboczy (zwykle /app lub /)
+# Dockerfile
 ARG BUILD_FROM
 ARG TARGETARCH
 
-# Ustawienie domyślnego obrazu bazowego
 FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
 
-# WAŻNA ZMIANA: Ustawienie powłoki dla wszystkich kolejnych komend RUN
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+# WAŻNA ZMIANA: Zmieniamy powłokę na 'sh' i dodajemy DEBIAN_FRONTEND
+SHELL ["/bin/sh", "-o", "pipefail", "-c"]
 
 # Ustaw katalog roboczy
 WORKDIR /app
@@ -19,8 +13,10 @@ WORKDIR /app
 # Kopiowanie plików rootfs (jeśli istnieją)
 COPY rootfs /
 
+COPY requirements.txt .
 # Instalacja zależności
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# WAŻNA ZMIANA: Dodajemy DEBIAN_FRONTEND=noninteractive przed apt-get
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     build-essential \
     gcc \
     python3-dev \
@@ -28,8 +24,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libusb-1.0-0-dev \
     libgpiod-dev \
     && rm -rf /var/lib/apt/lists/*
-
-COPY requirements.txt .
 
 # Zainstaluj wymagane pakiety Pythona
 RUN pip install --no-cache-dir -r requirements.txt
