@@ -43,7 +43,7 @@ jobs:
           platforms: linux/aarch64,linux/amd64,linux/armhf,linux/armv7
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/i2c-addon:${{ env.ADDON_VERSION }}
-            ghcr.io/${{ github.repository_owner }}/i2c-addon:latest
+            ghcr.io/${{ github.repository_owner | lower }}/i2c-addon:${{ env.ADDON_VERSION }}
+            ghcr.io/${{ github.repository_owner | lower }}/i2c-addon:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
