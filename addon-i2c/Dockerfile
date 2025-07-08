@@ -17,7 +17,7 @@ COPY rootfs /
 COPY requirements.txt .
 
 # Instalacja zależności systemowych
-# KLUCZOWA ZMIANA: Dodano więcej pakietów deweloperskich i bibliotek graficznych/hardware
+# KLUCZOWA ZMIANA: Dodano więcej pakietów, w tym dla luma.oled i ogólnej stabilności kompilacji
 RUN DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get update && \
     DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get install -y --no-install-recommends \
     build-essential \
@@ -27,22 +27,28 @@ RUN DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get update && \
     libusb-1.0-0-dev \
     libgpiod-dev \
     python3 python3-pip \
-    # Dodatkowe biblioteki dla Pillow i ogólnej obsługi obrazów
+    # Biblioteki dla Pillow i obsługi obrazów
     libjpeg-dev \
     zlib1g-dev \
     libtiff-dev \
     libfreetype6-dev \
-    # Dodatkowe biblioteki często potrzebne dla luma.oled i interakcji z hardware
+    # Biblioteki dla luma.oled i interakcji z hardware
     i2c-tools \
     python3-smbus \
-    # Często potrzebne do kompilacji pakietów Pythona z rozszerzeniami C
+    # Upewniamy się, że podstawowe narzędzia są zainstalowane
     pkg-config \
     libxml2-dev \
     libxslt1-dev \
-    # Dalsze pakiety deweloperskie dla różnych scenariuszy kompilacji
     automake \
     autoconf \
     libtool \
+    # Bardziej ogólne pakiety deweloperskie i biblioteki pomocnicze
+    ca-certificates \
+    curl \
+    gnupg \
+    # Czasami wymagane przez skomplikowane pakiety Pythona
+    libopenblas-dev \
+    liblapack-dev \
     # Usuwamy listy pakietów APT, aby zmniejszyć rozmiar obrazu
     && rm -rf /var/lib/apt/lists/*
 
