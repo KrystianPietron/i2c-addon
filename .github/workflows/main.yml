@@ -11,6 +11,18 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            docker_platform: linux/amd64 # Prawidłowa nazwa platformy dla Dockera
+          - arch: aarch64
+            docker_platform: linux/arm64/v8 # Prawidłowa nazwa platformy dla Dockera
+          - arch: armhf
+            docker_platform: linux/arm/v6 # Prawidłowa nazwa platformy dla Dockera
+          - arch: armv7
+            docker_platform: linux/arm/v7 # Prawidłowa nazwa platformy dla Dockera
 
     steps:
       - name: Checkout code
@@ -38,19 +50,61 @@ jobs:
           echo "ADDON_VERSION=$ADDON_VERSION" >> $GITHUB_ENV
         shell: bash
 
-      - name: Build and push Docker image
+      - name: Build and push Docker image for ${{ matrix.arch }}
         uses: docker/build-push-action@v5
         with:
           context: ./addon-i2c
           file: ./addon-i2c/Dockerfile
-          platforms: linux/aarch64,linux/amd64,linux/armhf,linux/armv7
+          platforms: ${{ matrix.docker_platform }} # Używamy teraz docker_platform
           push: true
           tags: |
-            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:${{ env.ADDON_VERSION }}
-            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:latest
+            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon-${{ matrix.arch }}:${{ env.ADDON_VERSION }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          # KLUCZOWA ZMIANA: Dynamiczne przekazywanie BUILD_FROM na podstawie platformy
+          # Używamy ogólnego taga 'debian:bookworm-slim'
+          # Buildx sam wybierze odpowiedni obraz dla platformy podanej w 'platforms'
           build-args: |
-            BUILD_FROM=debian:bookworm-slim-${{ buildx.arch }}
-        
+            BUILD_FROM=debian:bookworm-slim
+
+  create_manifest:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set lowercase repository owner
+        id: set_repo_owner_lowercase
+        run: echo "REPO_OWNER_LOWERCASE=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Get addon version from config.json
+        id: get_version
+        run: |
+          ADDON_VERSION=$(jq -r '.version' addon-i2c/config.json)
+          echo "ADDON_VERSION=$ADDON_VERSION" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Create manifest list and push
+        run: |
+          MANIFEST_TAG=ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:${{ env.ADDON_VERSION }}
+          LATEST_TAG=ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:latest
+
+          IMAGES_TO_MANIFEST=(
+            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon-amd64:${{ env.ADDON_VERSION }}
+            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon-aarch64:${{ env.ADDON_VERSION }}
+            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon-armhf:${{ env.ADDON_VERSION }}
+            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon-armv7:${{ env.ADDON_VERSION }}
+          )
+
+          docker manifest create ${MANIFEST_TAG} ${IMAGES_TO_MANIFEST[@]}
+          docker manifest push ${MANIFEST_TAG}
+
+          docker manifest create ${LATEST_TAG} ${IMAGES_TO_MANIFEST[@]}
+          docker manifest push ${LATEST_TAG}
+        shell: bash
