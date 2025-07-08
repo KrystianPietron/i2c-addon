@@ -12,23 +12,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false # Nie przerywaj od razu, jeśli jedno z zadań macierzy się nie powiedzie
+      fail-fast: false
       matrix:
-        # Definicja architektur i odpowiadających im obrazów bazowych Debiana
-        # To jest kluczowe, bo tu mapujemy platformę na prawidłowy tag Debiana
         include:
           - arch: amd64
-            docker_arch: amd64 # Używane w tagach Dockera
-            debian_base_image: debian:bookworm-slim-amd64
+            docker_platform: linux/amd64 # Prawidłowa nazwa platformy dla Dockera
           - arch: aarch64
-            docker_arch: arm64 # Używane w tagach Dockera
-            debian_base_image: debian:bookworm-slim-arm64v8
+            docker_platform: linux/arm64/v8 # Prawidłowa nazwa platformy dla Dockera
           - arch: armhf
-            docker_arch: arm/v6 # Używane w tagach Dockera, często jako 'arm/v6'
-            debian_base_image: debian:bookworm-slim-arm32v6 # Prawidłowy tag Debiana dla armhf (arm32v6)
+            docker_platform: linux/arm/v6 # Prawidłowa nazwa platformy dla Dockera
           - arch: armv7
-            docker_arch: arm/v7 # Używane w tagach Dockera, często jako 'arm/v7'
-            debian_base_image: debian:bookworm-slim-arm32v7 # Prawidłowy tag Debiana dla armv7 (arm32v7)
+            docker_platform: linux/arm/v7 # Prawidłowa nazwa platformy dla Dockera
 
     steps:
       - name: Checkout code
@@ -61,19 +55,19 @@ jobs:
         with:
           context: ./addon-i2c
           file: ./addon-i2c/Dockerfile
-          platforms: linux/${{ matrix.docker_arch }} # Budujemy tylko dla jednej architektury w tym zadaniu
+          platforms: ${{ matrix.docker_platform }} # Używamy teraz docker_platform
           push: true
           tags: |
             ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon-${{ matrix.arch }}:${{ env.ADDON_VERSION }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          # Przekazujemy konkretny obraz bazowy dla tej architektury
+          # Używamy ogólnego taga 'debian:bookworm-slim'
+          # Buildx sam wybierze odpowiedni obraz dla platformy podanej w 'platforms'
           build-args: |
-            BUILD_FROM=${{ matrix.debian_base_image }}
+            BUILD_FROM=debian:bookworm-slim
 
-  # NOWE ZADANIE: Tworzenie manifestu multi-arch
   create_manifest:
-    needs: build # Uruchamia się po zakończeniu wszystkich zadań 'build'
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
@@ -109,7 +103,6 @@ jobs:
           )
 
           docker manifest create ${MANIFEST_TAG} ${IMAGES_TO_MANIFEST[@]}
-
           docker manifest push ${MANIFEST_TAG}
 
           docker manifest create ${LATEST_TAG} ${IMAGES_TO_MANIFEST[@]}
