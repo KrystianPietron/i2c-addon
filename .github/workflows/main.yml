@@ -26,7 +26,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # NOWY KROK: Ustawienie nazwy właściciela repozytorium na małe litery
       - name: Set lowercase repository owner
         id: set_repo_owner_lowercase
         run: echo "REPO_OWNER_LOWERCASE=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
@@ -35,7 +34,7 @@ jobs:
         id: get_version
         run: |
           ADDON_VERSION=$(jq -r '.version' addon-i2c/config.json)
-          echo "ADDON_VERSION=$ADDON_ENV" >> $GITHUB_ENV # Poprawka: tutaj powinno być $ADDON_VERSION
+          echo "ADDON_VERSION=$ADDON_VERSION" >> $GITHUB_ENV
         shell: bash
 
       - name: Build and push Docker image
