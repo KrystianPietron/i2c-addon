@@ -1,5 +1,5 @@
 # Dockerfile
-ARG BUILD_FROM
+ARG BUILD_FROM # Ta zmienna będzie zawierać pełną nazwę obrazu bazowego
 
 # Standardowa deklaracja FROM z użyciem BUILD_FROM
 FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
@@ -43,10 +43,13 @@ RUN DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get update && \
     gnupg \
     libopenblas-dev \
     liblapack-dev \
+    # KLUCZOWA ZMIANA DIAGNOSTYCZNA: Dodaj bsdutils do użycia 'script'
+    bsdutils \
     && rm -rf /var/lib/apt/lists/*
 
-# Zainstaluj wymagane pakiety Pythona, zapisując logi do pliku, a następnie wyświetlając go
-RUN pip install -v --no-cache-dir -r requirements.txt 2>&1 | tee pip_install_log.txt || true && \
+# Zainstaluj wymagane pakiety Pythona, używając 'script' do przechwycenia szczegółowych logów
+# KLUCZOWA ZMIANA DIAGNOSTYCZNA: Użycie 'script' do wymuszenia wyświetlania tekstowych logów
+RUN script -q -c "pip install -v --no-cache-dir -r requirements.txt" pip_install_log.txt || true && \
     cat pip_install_log.txt
 
 # Skopiuj cały kod dodatku do kontenera
