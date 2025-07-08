@@ -4,7 +4,7 @@ set -e
 echo "Starting my Python add-on..."
 
 # Uruchom Twój skrypt Pythona
-python3 addon-i2c/main.py
+python3 main.py
 
 echo "Python add-on finished."
 # Kontener zostanie zatrzymany po zakończeniu skryptu.
