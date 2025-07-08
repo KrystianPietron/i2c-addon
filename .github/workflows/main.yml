@@ -3,29 +3,28 @@ name: Build and Publish Addon
 on:
   push:
     branches:
-      - main # Uruchamia workflow przy pushu do gałęzi 'main'
+      - main
     paths:
-      - 'addon-i2c/**' # Uruchamia tylko jeśli pliki w folderze addon-i2c zostaną zmienione
-  workflow_dispatch: # Pozwala na ręczne uruchamianie workflowu z interfejsu GitHub
+      - 'addon-i2c/**'
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Nie potrzebujemy strategy.matrix.arch, ponieważ build-push-action zajmie się wieloma architekturami w jednym kroku.
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4 # Pobiera kod z repozytorium
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3 # Konfiguruje Buildx do budowania multi-arch
+        uses: docker/setup-buildx-action@v3
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }} # Używa wbudowanego tokena GitHub
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set lowercase repository owner
         id: set_repo_owner_lowercase
@@ -42,20 +41,16 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./addon-i2c # Ścieżka do folderu z Dockerfile
-          file: ./addon-i2c/Dockerfile # Ścieżka do Dockerfile
-          # Lista wszystkich architektur, aby stworzyć multi-arch manifest
+          context: ./addon-i2c
+          file: ./addon-i2c/Dockerfile
           platforms: linux/aarch64,linux/amd64,linux/armhf,linux/armv7
-          push: true # Wypycha obraz do GHCR
+          push: true
           tags: |
             ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:${{ env.ADDON_VERSION }}
             ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:latest
-          cache-from: type=gha # Używa cache'u GitHub Actions dla szybszych kompilacji
+          cache-from: type=gha
           cache-to: type=gha,mode=max
-          # Kluczowa zmiana: Przekazujemy odpowiednie obrazy bazowe Debiana dla każdej architektury.
-          # Upewnij się, że Twój Dockerfile używa ARG BUILD_FROM.
+          # KLUCZOWA ZMIANA: Dynamiczne przekazywanie BUILD_FROM na podstawie platformy
           build-args: |
-            BUILD_FROM_AARCH64=debian:bookworm-slim-arm64v8 # Najnowszy Debian Slim dla aarch64
-            BUILD_FROM_AMD64=debian:bookworm-slim-amd64 # Najnowszy Debian Slim dla amd64
-            BUILD_FROM_ARMHF=debian:bookworm-slim-arm32v6 # Najnowszy Debian Slim dla armhf (arm32v6)
-            BUILD_FROM_ARMV7=debian:bookworm-slim-arm32v7 # Najnowszy Debian Slim dla armv7 (arm32v7)
+            BUILD_FROM=debian:bookworm-slim-${{ buildx.arch }}
+        
