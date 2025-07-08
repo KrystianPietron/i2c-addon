@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "description": "Obsługa wyświetlaczy i2c",
   "arch": [
-    "aarch64"
+    "aarch64",
+    "amd64",
+    "armhf",
+    "armv7",
+    "i386"
   ],
   "startup": "application",
   "boot": "auto",
