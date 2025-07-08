@@ -1,5 +1,5 @@
 # Dockerfile
-ARG BUILD_FROM # Ta zmienna będzie zawierać pełną nazwę obrazu bazowego
+ARG BUILD_FROM
 
 # Standardowa deklaracja FROM z użyciem BUILD_FROM
 FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
