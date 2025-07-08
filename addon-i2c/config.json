@@ -19,7 +19,7 @@
   ],
   "url": "https://github.com/KrystianPietron/i2c-addon",
   "slug": "addon-i2c",
-  "image": "ghcr.io/krystianpietron/i2c-addon:1.0.0",
+  "image": "ghcr.io/krystianpietron/i2c-addon",
   "privileged": ["SYS_RAWIO"],
   "init": false,
   "build": {
