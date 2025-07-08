@@ -1,5 +1,10 @@
 {
-  "name": "KrystianPietron Add-ons",
+  "name": "i2c",
   "url": "https://github.com/KrystianPietron/i2c-addon",
-  "maintainer": "Krystian Pietroń"
-}
+  "maintainer": "Krystian Pietron",
+  "addons": [
+    {
+      "folder": "addon-i2c"
+    }
+  ]
+}s

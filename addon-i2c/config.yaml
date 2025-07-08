@@ -1,18 +1,20 @@
-{
-  "name": "i2c addon",
-  "version": "1.0.0",
-  "description": "Obsługa wyświetlaczy i2c",
-  "arch": ["aarch64", "amd64", "armhf", "armv7", "i386"],
-  "startup": "application",
-  "boot": "auto",
-  "options": {},
-  "schema": {},
-  "devices": [
-    "/dev/i2c-1:/dev/i2c-1:rwm",
-    "/dev/i2c-13:/dev/i2c-13:rwm"
-  ],
-  "url": "https://github.com/krystianpietron/i2c-addon",
-  "slug": "addon-i2c",
-  "privileged": false,
-  "image": "ghcr.io/KrystianPietron/i2c-addon/{arch}"
-}
+name: i2c addon
+version: 1.0.0
+description: Obsługa wyświetlaczy i2c
+arch:
+  - aarch64
+  - amd64
+  - armhf
+  - armv7
+  - i386
+startup: application
+boot: auto
+options: {}
+schema: {}
+devices:
+  - /dev/i2c-1:/dev/i2c-1:rwm
+  - /dev/i2c-13:/dev/i2c-13:rwm
+url: https://github.com/KrystianPietron/i2c-addon
+slug: addon-i2c
+privileged: false
+image: krystianpietron/i2c-addon-{arch}
