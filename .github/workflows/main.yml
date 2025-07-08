@@ -54,7 +54,7 @@ jobs:
           platforms: ${{ matrix.docker_platform }}
           push: true
           tags: |
-            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon-${{ matrix.arch }}:${{ env.ADDON_VERSION }}
+            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:${{ env.ADDON_VERSION }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
