@@ -19,7 +19,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Tylko architektura aarch64 (arm64)
           - arch: aarch64
             docker_platform: linux/arm64/v8
 
@@ -40,21 +39,18 @@ jobs:
       - name: Set lowercase repository owner
         id: set_repo_owner_lowercase
         run: echo "REPO_OWNER_LOWERCASE=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-        shell: bash
 
       - name: Get addon version from config.json
         id: get_version
-        # KLUCZOWA ZMIANA: Dodajemy pełną ścieżkę do config.json
         run: |
           ADDON_VERSION=$(jq -r '.version' ./addon-i2c/config.json)
           echo "ADDON_VERSION=$ADDON_VERSION" >> $GITHUB_ENV
-        shell: bash
 
       - name: Build and push Docker image for ${{ matrix.arch }}
         uses: docker/build-push-action@v5
         with:
-          context: ./addon-i2c # Context jest poprawny
-          file: ./addon-i2c/Dockerfile # Ścieżka do Dockerfile jest poprawna
+          context: ./addon-i2c
+          file: ./addon-i2c/Dockerfile
           platforms: ${{ matrix.docker_platform }}
           push: true
           tags: |
@@ -69,6 +65,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout code 
+        uses: actions/checkout@v4
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -79,29 +78,26 @@ jobs:
       - name: Set lowercase repository owner
         id: set_repo_owner_lowercase
         run: echo "REPO_OWNER_LOWERCASE=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-        shell: bash
 
       - name: Get addon version from config.json (Manifest Job)
         id: get_version_manifest
-        # KLUCZOWA ZMIANA: Dodajemy pełną ścieżkę do config.json
         run: |
           ADDON_VERSION=$(jq -r '.version' ./addon-i2c/config.json)
           echo "ADDON_VERSION=$ADDON_VERSION" >> $GITHUB_ENV
-        shell: bash
 
       - name: Agresywnie poczekaj na dostępność obrazu
         run: |
           echo "Odczekuję 60 sekund, aby dać GHCR czas na indeksowanie obrazu..."
           sleep 60
-        shell: bash
 
       - name: Create and push Docker manifest
         run: |
           MANIFEST_BASE=ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon
-          ADDON_VERSION=${{ env.ADDON_VERSION }} # Ta zmienna powinna być już dostępna z poprzedniego kroku
+          ADDON_VERSION=${{ env.ADDON_VERSION }}
           ARCH_IMAGE="${MANIFEST_BASE}-aarch64:${ADDON_VERSION}"
 
-          echo "Próbuję utworzyć manifest dla wersji: ${ADDON_VERSION}"
-          echo "Obraz źródłowy dla manifestu: ${ARCH_IMAGE}"
-          
-          docker manifest create --verbose --amend ${MANIFEST_BASE}:${ADDON_VERSION} ${ARCH_IMAGE} || { echo "ERROR: docker manifest create dla wersji ${ADDON_VERSION} nie pow
+          echo "Tworzę manifest dla wersji: ${ADDON_VERSION}"
+          echo "Obraz źródłowy: ${ARCH_IMAGE}"
+
+          docker manifest create ${MANIFEST_BASE}:${ADDON_VERSION} ${ARCH_IMAGE}
+          docker manifest push ${MANIFEST_BASE}:${ADDON_VERSION}
