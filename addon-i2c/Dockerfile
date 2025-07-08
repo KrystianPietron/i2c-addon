@@ -15,10 +15,12 @@ COPY rootfs /
 # Kopiowanie requirements.txt
 COPY requirements.txt .
 
-# Instalacja zależności systemowych - UWAGA: ZMIENIA SIĘ SKŁADNIA DLA ALPINE!
-# KLUCZOWA ZMIANA: Dodajemy `sh -c` aby upewnić się, że komenda jest uruchamiana przez sh
-RUN sh -c "apk update && \
-    apk add --no-cache \
+# --- KLUCZOWA ZMIANA: ROZDZIELENIE apk update i apk add ---
+# Krok 1: Wykonaj tylko aktualizację indeksu pakietów
+RUN apk update
+
+# Krok 2: Zainstaluj pakiety
+RUN apk add --no-cache \
     build-base \
     python3 \
     py3-pip \
@@ -32,7 +34,8 @@ RUN sh -c "apk update && \
     i2c-tools \
     python3-dev \
     bash \
-    && rm -rf /var/cache/apk/*"
+    && rm -rf /var/cache/apk/*
+# --- KONIEC KLUCZOWEJ ZMIANY ---
 
 # Zainstaluj wymagane pakiety Pythona, zapisując logi do pliku, a następnie wyświetlając go
 RUN pip install -v --no-cache-dir -r requirements.txt 2>&1 | tee pip_install_log.txt || true && \
@@ -42,8 +45,6 @@ RUN pip install -v --no-cache-dir -r requirements.txt 2>&1 | tee pip_install_log
 COPY . .
 
 # Tworzenie run.sh bezpośrednio w Dockerfile
-# Pamiętaj, że jeśli zdecydujesz się na CMD ["python3", "/app/main.py"]
-# to ten blok i chmod +x są zbędne. Jeśli wracasz do run.sh, to ten blok jest OK.
 RUN <<EOF > /app/run.sh
 #!/bin/sh
 set -e
