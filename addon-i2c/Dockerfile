@@ -45,4 +45,4 @@ COPY . /
 # Nadaj uprawnienia do wykonania stworzonemu plikowi
 RUN chmod a+x run.sh
 
-CMD [ "run.sh" ]
+CMD [ "/run.sh" ]
