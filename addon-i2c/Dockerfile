@@ -53,7 +53,7 @@ RUN pip install -v --no-cache-dir -r requirements.txt 2>&1 | tee pip_install_log
 
 # 1. Agresywne kopiowanie i usuwanie:
 # Upewniamy się, że kopiujemy odpowiedni plik i resetujemy jego stan
-COPY run.sh /app/run.sh.tmp # Kopiuj do tymczasowego pliku
+COPY run.sh /app/run.sh.tmp
 RUN rm -f /app/run.sh # Usuń wszelkie stare wersje
 RUN mv /app/run.sh.tmp /app/run.sh # Zastąp prawidłowym plikiem
 
