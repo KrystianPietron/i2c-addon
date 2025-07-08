@@ -5,6 +5,7 @@
   "arch": [
     "aarch64",
     "amd64",
+    "arm64",
     "armhf",
     "armv7",
     "i386"
