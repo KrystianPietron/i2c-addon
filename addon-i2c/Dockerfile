@@ -17,7 +17,7 @@ COPY rootfs /
 COPY requirements.txt .
 
 # Instalacja zależności systemowych
-# KLUCZOWA ZMIANA: Dodano libjpeg-dev, zlib1g-dev, libtiff-dev, libfreetype6-dev, i2c-tools, python3-smbus, python3-dev
+# KLUCZOWA ZMIANA: Dodano więcej pakietów deweloperskich i bibliotek graficznych/hardware
 RUN DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get update && \
     DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get install -y --no-install-recommends \
     build-essential \
@@ -27,12 +27,23 @@ RUN DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get update && \
     libusb-1.0-0-dev \
     libgpiod-dev \
     python3 python3-pip \
+    # Dodatkowe biblioteki dla Pillow i ogólnej obsługi obrazów
     libjpeg-dev \
     zlib1g-dev \
     libtiff-dev \
     libfreetype6-dev \
+    # Dodatkowe biblioteki często potrzebne dla luma.oled i interakcji z hardware
     i2c-tools \
     python3-smbus \
+    # Często potrzebne do kompilacji pakietów Pythona z rozszerzeniami C
+    pkg-config \
+    libxml2-dev \
+    libxslt1-dev \
+    # Dalsze pakiety deweloperskie dla różnych scenariuszy kompilacji
+    automake \
+    autoconf \
+    libtool \
+    # Usuwamy listy pakietów APT, aby zmniejszyć rozmiar obrazu
     && rm -rf /var/lib/apt/lists/*
 
 # Zainstaluj wymagane pakiety Pythona
