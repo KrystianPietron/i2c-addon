@@ -1,5 +1,5 @@
 # Dockerfile
-ARG BUILD_FROM
+ARG BUILD_FROM # Ta zmienna będzie zawierać pełną nazwę obrazu bazowego
 
 # Standardowa deklaracja FROM z użyciem BUILD_FROM
 FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
@@ -16,7 +16,7 @@ COPY rootfs /
 # Kopiowanie requirements.txt
 COPY requirements.txt .
 
-# Instalacja zależności systemowych (zostawiamy rozszerzoną listę z poprzedniego kroku)
+# Instalacja zależności systemowych
 RUN DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get update && \
     DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get install -y --no-install-recommends \
     build-essential \
@@ -45,9 +45,9 @@ RUN DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get update && \
     liblapack-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Zainstaluj wymagane pakiety Pythona z trybem verbose
-# KLUCZOWA ZMIANA: Dodano -v (verbose)
-RUN pip install -v --no-cache-dir -r requirements.txt
+# Zainstaluj wymagane pakiety Pythona, zapisując logi do pliku, a następnie wyświetlając go
+RUN pip install -v --no-cache-dir -r requirements.txt 2>&1 | tee pip_install_log.txt || true && \
+    cat pip_install_log.txt
 
 # Skopiuj cały kod dodatku do kontenera
 COPY . .
