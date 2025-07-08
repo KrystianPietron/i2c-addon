@@ -3,32 +3,34 @@ name: Build and Publish Addon
 on:
   push:
     branches:
-      - main
+      - main # Uruchamia workflow przy pushu do gałęzi 'main'
     paths:
-      - 'addon-i2c/**'
-  workflow_dispatch:
+      - 'addon-i2c/**' # Uruchamia tylko jeśli pliki w folderze addon-i2c zostaną zmienione
+  workflow_dispatch: # Pozwala na ręczne uruchamianie workflowu z interfejsu GitHub
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Nie potrzebujemy strategy.matrix.arch, ponieważ build-push-action zajmie się wieloma architekturami w jednym kroku.
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4 # Pobiera kod z repozytorium
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v3 # Konfiguruje Buildx do budowania multi-arch
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }} # Używa wbudowanego tokena GitHub
 
       - name: Set lowercase repository owner
         id: set_repo_owner_lowercase
         run: echo "REPO_OWNER_LOWERCASE=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+        shell: bash
 
       - name: Get addon version from config.json
         id: get_version
@@ -40,15 +42,20 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./addon-i2c
-          file: ./addon-i2c/Dockerfile
+          context: ./addon-i2c # Ścieżka do folderu z Dockerfile
+          file: ./addon-i2c/Dockerfile # Ścieżka do Dockerfile
+          # Lista wszystkich architektur, aby stworzyć multi-arch manifest
           platforms: linux/aarch64,linux/amd64,linux/armhf,linux/armv7
-          push: true
+          push: true # Wypycha obraz do GHCR
           tags: |
             ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:${{ env.ADDON_VERSION }}
             ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:latest
-          cache-from: type=gha
+          cache-from: type=gha # Używa cache'u GitHub Actions dla szybszych kompilacji
           cache-to: type=gha,mode=max
-          # WAŻNA ZMIANA: Dodajemy argumenty budowania dla Dockerfile
+          # Kluczowa zmiana: Przekazujemy odpowiednie obrazy bazowe Debiana dla każdej architektury.
+          # Upewnij się, że Twój Dockerfile używa ARG BUILD_FROM.
           build-args: |
-            BUILD_FROM=homeassistant/amd64-base:latest
+            BUILD_FROM_AARCH64=debian:bookworm-slim-arm64v8 # Najnowszy Debian Slim dla aarch64
+            BUILD_FROM_AMD64=debian:bookworm-slim-amd64 # Najnowszy Debian Slim dla amd64
+            BUILD_FROM_ARMHF=debian:bookworm-slim-arm32v6 # Najnowszy Debian Slim dla armhf (arm32v6)
+            BUILD_FROM_ARMV7=debian:bookworm-slim-arm32v7 # Najnowszy Debian Slim dla armv7 (arm32v7)
