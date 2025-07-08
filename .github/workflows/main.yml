@@ -8,10 +8,9 @@ on:
       - 'addon-i2c/**'
   workflow_dispatch:
 
-# KLUCZOWA ZMIANA: Dodano sekcję permissions
 permissions:
-  contents: read # Domyślnie, aby móc sklonować repozytorium
-  packages: write # NADANIE UPRAWNIEŃ DO ZAPISU PAKIETÓW!
+  contents: read
+  packages: write
 
 jobs:
   build:
@@ -20,14 +19,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - arch: amd64
-            docker_platform: linux/amd64
+          # Tylko architektura aarch64 (arm64)
           - arch: aarch64
             docker_platform: linux/arm64/v8
-          - arch: armhf
-            docker_platform: linux/arm/v6
-          - arch: armv7
-            docker_platform: linux/arm/v7
 
     steps:
       - name: Checkout code
@@ -93,21 +87,28 @@ jobs:
           echo "ADDON_VERSION=$ADDON_VERSION" >> $GITHUB_ENV
         shell: bash
 
+      - name: Wait for images to be available
+        run: sleep 15 # Odczekaj 15 sekund
+        shell: bash
+
       - name: Create manifest list and push
         run: |
           MANIFEST_TAG=ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:${{ env.ADDON_VERSION }}
           LATEST_TAG=ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:latest
 
           IMAGES_TO_MANIFEST=(
-            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon-amd64:${{ env.ADDON_VERSION }}
             ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon-aarch64:${{ env.ADDON_VERSION }}
-            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon-armhf:${{ env.ADDON_VERSION }}
-            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon-armv7:${{ env.ADDON_VERSION }}
           )
 
+          echo "Creating manifest for ${MANIFEST_TAG} with images: ${IMAGES_TO_MANIFEST[@]}"
           docker manifest create ${MANIFEST_TAG} ${IMAGES_TO_MANIFEST[@]}
+
+          echo "Pushing manifest ${MANIFEST_TAG}"
           docker manifest push ${MANIFEST_TAG}
 
+          echo "Creating manifest for ${LATEST_TAG} with images: ${IMAGES_TO_MANIFEST[@]}"
           docker manifest create ${LATEST_TAG} ${IMAGES_TO_MANIFEST[@]}
+
+          echo "Pushing manifest ${LATEST_TAG}"
           docker manifest push ${LATEST_TAG}
         shell: bash
