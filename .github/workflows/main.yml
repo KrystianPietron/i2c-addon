@@ -8,6 +8,10 @@ on:
       - 'addon-i2c/**'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,14 +19,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - arch: amd64
-            docker_platform: linux/amd64 # Prawidłowa nazwa platformy dla Dockera
+          # Tylko architektura aarch64 (arm64)
           - arch: aarch64
-            docker_platform: linux/arm64/v8 # Prawidłowa nazwa platformy dla Dockera
-          - arch: armhf
-            docker_platform: linux/arm/v6 # Prawidłowa nazwa platformy dla Dockera
-          - arch: armv7
-            docker_platform: linux/arm/v7 # Prawidłowa nazwa platformy dla Dockera
+            docker_platform: linux/arm64/v8
 
     steps:
       - name: Checkout code
@@ -55,14 +54,12 @@ jobs:
         with:
           context: ./addon-i2c
           file: ./addon-i2c/Dockerfile
-          platforms: ${{ matrix.docker_platform }} # Używamy teraz docker_platform
+          platforms: ${{ matrix.docker_platform }}
           push: true
           tags: |
             ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon-${{ matrix.arch }}:${{ env.ADDON_VERSION }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          # Używamy ogólnego taga 'debian:bookworm-slim'
-          # Buildx sam wybierze odpowiedni obraz dla platformy podanej w 'platforms'
           build-args: |
             BUILD_FROM=debian:bookworm-slim
 
@@ -90,21 +87,28 @@ jobs:
           echo "ADDON_VERSION=$ADDON_VERSION" >> $GITHUB_ENV
         shell: bash
 
+      - name: Wait for images to be available
+        run: sleep 15 # Odczekaj 15 sekund
+        shell: bash
+
       - name: Create manifest list and push
         run: |
           MANIFEST_TAG=ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:${{ env.ADDON_VERSION }}
           LATEST_TAG=ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:latest
 
           IMAGES_TO_MANIFEST=(
-            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon-amd64:${{ env.ADDON_VERSION }}
             ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon-aarch64:${{ env.ADDON_VERSION }}
-            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon-armhf:${{ env.ADDON_VERSION }}
-            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon-armv7:${{ env.ADDON_VERSION }}
           )
 
+          echo "Creating manifest for ${MANIFEST_TAG} with images: ${IMAGES_TO_MANIFEST[@]}"
           docker manifest create ${MANIFEST_TAG} ${IMAGES_TO_MANIFEST[@]}
+
+          echo "Pushing manifest ${MANIFEST_TAG}"
           docker manifest push ${MANIFEST_TAG}
 
+          echo "Creating manifest for ${LATEST_TAG} with images: ${IMAGES_TO_MANIFEST[@]}"
           docker manifest create ${LATEST_TAG} ${IMAGES_TO_MANIFEST[@]}
+
+          echo "Pushing manifest ${LATEST_TAG}"
           docker manifest push ${LATEST_TAG}
         shell: bash
