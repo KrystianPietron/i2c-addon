@@ -15,8 +15,9 @@ COPY rootfs /
 
 COPY requirements.txt .
 # Instalacja zależności
-# WAŻNA ZMIANA: Dodajemy DEBIAN_FRONTEND=noninteractive przed apt-get
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+# WAŻNA ZMIANA: Używamy pełnej ścieżki do apt-get!
+RUN DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get update && \
+    DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get install -y --no-install-recommends \
     build-essential \
     gcc \
     python3-dev \
