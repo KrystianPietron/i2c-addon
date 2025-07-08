@@ -4,11 +4,22 @@ ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
 # Ustaw katalog roboczy (zwykle /app lub /)
+ARG BUILD_FROM
+ARG TARGETARCH
+
+# Ustawienie domyślnego obrazu bazowego
+FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
+
+# WAŻNA ZMIANA: Ustawienie powłoki dla wszystkich kolejnych komend RUN
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# Ustaw katalog roboczy
 WORKDIR /app
 
-# Zainstaluj zależności systemowe (jeśli nie są już w bazowym obrazie HA)
-# Te pakiety mogą być potrzebne do kompilacji niektórych bibliotek Pythona (np. RPi.GPIO, smbus)
-# Pakiet libgpiod-dev może być potrzebny dla GPIO w nowszych systemach
+# Kopiowanie plików rootfs (jeśli istnieją)
+COPY rootfs /
+
+# Instalacja zależności
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     gcc \
@@ -18,8 +29,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgpiod-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Skopiuj plik z zależnościami Pythona
-# PAMIĘTAJ: ścieżki są względne do kontekstu budowania, który powinien być katalogiem addon-i2c
 COPY requirements.txt .
 
 # Zainstaluj wymagane pakiety Pythona
