@@ -1,11 +1,6 @@
 ARG BUILD_FROM=debian:bookworm-slim
 FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
 
-#ARG BUILD_FROM
-#FROM $BUILD_FROM
-
-# Install requirements for add-on
-
 WORKDIR /app
 
 COPY rootfs /
@@ -52,7 +47,7 @@ set -e
 echo "Starting my Python add-on..."
 
 # Uruchom Twój skrypt Pythona
-python3 main.py
+python3 addon-i2c/main.py
 
 echo "Python add-on finished."
 EOF
