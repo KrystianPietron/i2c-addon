@@ -17,6 +17,7 @@ COPY rootfs /
 COPY requirements.txt .
 
 # Instalacja zależności systemowych
+# KLUCZOWA ZMIANA: Dodano libjpeg-dev, zlib1g-dev, libtiff-dev, libfreetype6-dev, i2c-tools, python3-smbus, python3-dev
 RUN DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get update && \
     DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get install -y --no-install-recommends \
     build-essential \
@@ -26,6 +27,12 @@ RUN DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get update && \
     libusb-1.0-0-dev \
     libgpiod-dev \
     python3 python3-pip \
+    libjpeg-dev \
+    zlib1g-dev \
+    libtiff-dev \
+    libfreetype6-dev \
+    i2c-tools \
+    python3-smbus \
     && rm -rf /var/lib/apt/lists/*
 
 # Zainstaluj wymagane pakiety Pythona
