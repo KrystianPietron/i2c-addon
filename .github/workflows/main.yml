@@ -11,6 +11,24 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false # Nie przerywaj od razu, jeśli jedno z zadań macierzy się nie powiedzie
+      matrix:
+        # Definicja architektur i odpowiadających im obrazów bazowych Debiana
+        # To jest kluczowe, bo tu mapujemy platformę na prawidłowy tag Debiana
+        include:
+          - arch: amd64
+            docker_arch: amd64 # Używane w tagach Dockera
+            debian_base_image: debian:bookworm-slim-amd64
+          - arch: aarch64
+            docker_arch: arm64 # Używane w tagach Dockera
+            debian_base_image: debian:bookworm-slim-arm64v8
+          - arch: armhf
+            docker_arch: arm/v6 # Używane w tagach Dockera, często jako 'arm/v6'
+            debian_base_image: debian:bookworm-slim-arm32v6 # Prawidłowy tag Debiana dla armhf (arm32v6)
+          - arch: armv7
+            docker_arch: arm/v7 # Używane w tagach Dockera, często jako 'arm/v7'
+            debian_base_image: debian:bookworm-slim-arm32v7 # Prawidłowy tag Debiana dla armv7 (arm32v7)
 
     steps:
       - name: Checkout code
@@ -38,19 +56,62 @@ jobs:
           echo "ADDON_VERSION=$ADDON_VERSION" >> $GITHUB_ENV
         shell: bash
 
-      - name: Build and push Docker image
+      - name: Build and push Docker image for ${{ matrix.arch }}
         uses: docker/build-push-action@v5
         with:
           context: ./addon-i2c
           file: ./addon-i2c/Dockerfile
-          platforms: linux/aarch64,linux/amd64,linux/armhf,linux/armv7
+          platforms: linux/${{ matrix.docker_arch }} # Budujemy tylko dla jednej architektury w tym zadaniu
           push: true
           tags: |
-            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:${{ env.ADDON_VERSION }}
-            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:latest
+            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon-${{ matrix.arch }}:${{ env.ADDON_VERSION }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          # KLUCZOWA ZMIANA: Dynamiczne przekazywanie BUILD_FROM na podstawie platformy
+          # Przekazujemy konkretny obraz bazowy dla tej architektury
           build-args: |
-            BUILD_FROM=debian:bookworm-slim-${{ buildx.arch }}
-        
+            BUILD_FROM=${{ matrix.debian_base_image }}
+
+  # NOWE ZADANIE: Tworzenie manifestu multi-arch
+  create_manifest:
+    needs: build # Uruchamia się po zakończeniu wszystkich zadań 'build'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set lowercase repository owner
+        id: set_repo_owner_lowercase
+        run: echo "REPO_OWNER_LOWERCASE=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Get addon version from config.json
+        id: get_version
+        run: |
+          ADDON_VERSION=$(jq -r '.version' addon-i2c/config.json)
+          echo "ADDON_VERSION=$ADDON_VERSION" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Create manifest list and push
+        run: |
+          MANIFEST_TAG=ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:${{ env.ADDON_VERSION }}
+          LATEST_TAG=ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:latest
+
+          IMAGES_TO_MANIFEST=(
+            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon-amd64:${{ env.ADDON_VERSION }}
+            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon-aarch64:${{ env.ADDON_VERSION }}
+            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon-armhf:${{ env.ADDON_VERSION }}
+            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon-armv7:${{ env.ADDON_VERSION }}
+          )
+
+          docker manifest create ${MANIFEST_TAG} ${IMAGES_TO_MANIFEST[@]}
+
+          docker manifest push ${MANIFEST_TAG}
+
+          docker manifest create ${LATEST_TAG} ${IMAGES_TO_MANIFEST[@]}
+          docker manifest push ${LATEST_TAG}
+        shell: bash
