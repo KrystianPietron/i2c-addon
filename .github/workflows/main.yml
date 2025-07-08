@@ -43,10 +43,7 @@ jobs:
           platforms: linux/aarch64,linux/amd64,linux/armhf,linux/armv7
           push: true
           tags: |
-            # WAŻNA ZMIANA: Główny tag bez sufiksu architektonicznego.
-            # To utworzy multi-arch manifest listę pod tym tagiem.
             ghcr.io/${{ github.repository_owner }}/i2c-addon:${{ env.ADDON_VERSION }}
-            # Opcjonalnie: tag 'latest' również jako multi-arch manifest.
             ghcr.io/${{ github.repository_owner }}/i2c-addon:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
