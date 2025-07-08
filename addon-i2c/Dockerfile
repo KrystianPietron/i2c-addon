@@ -42,7 +42,6 @@ RUN DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get update && \
     libopenblas-dev \
     liblapack-dev \
     dos2unix \
-    # Dodatkowe narzędzia diagnostyczne
     file \
     && rm -rf /var/lib/apt/lists/*
 
@@ -50,27 +49,36 @@ RUN DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get update && \
 RUN pip install -v --no-cache-dir -r requirements.txt 2>&1 | tee pip_install_log.txt || true && \
     cat pip_install_log.txt
 
-# Skopiuj cały kod dodatku do kontenera
-COPY . .
+# --- KLUCZOWE ZMIANY DLA run.sh ---
 
-# --- KLUCZOWE ZMIANY DLA DIAGNOSTYKI run.sh ---
-# 1. Sprawdź format pliku przed konwersją
-RUN echo "--- Diagnostyka run.sh przed dos2unix ---" && \
+# 1. Agresywne kopiowanie i usuwanie:
+# Upewniamy się, że kopiujemy odpowiedni plik i resetujemy jego stan
+COPY run.sh /app/run.sh.tmp # Kopiuj do tymczasowego pliku
+RUN rm -f /app/run.sh # Usuń wszelkie stare wersje
+RUN mv /app/run.sh.tmp /app/run.sh # Zastąp prawidłowym plikiem
+
+# 2. Diagnostyka przed konwersją:
+RUN echo "--- Diagnostyka run.sh PRZED konwersją ---" && \
+    ls -la /app/run.sh && \
     file /app/run.sh && \
-    echo "--- Zawartość run.sh przed dos2unix ---" && \
-    cat -v /app/run.sh
+    head -n 2 /app/run.sh | cat -v # Pokaż początek pliku z widocznymi znakami kontrolnymi
 
-# 2. Skonwertuj znaki końca linii i ustaw uprawnienia
-RUN dos2unix /app/run.sh && \
+# 3. Agresywna konwersja i uprawnienia:
+# Użyj sed, żeby usunąć znak powrotu karetki (CR) - to jest najbardziej niezawodne
+RUN sed -i 's/\r$//' /app/run.sh && \
+    dos2unix /app/run.sh && \
     chmod +x /app/run.sh
 
-# 3. Sprawdź format pliku po konwersji
-RUN echo "--- Diagnostyka run.sh po dos2unix ---" && \
+# 4. Diagnostyka po konwersji:
+RUN echo "--- Diagnostyka run.sh PO konwersji ---" && \
+    ls -la /app/run.sh && \
     file /app/run.sh && \
-    echo "--- Zawartość run.sh po dos2unix (po konwersji) ---" && \
-    cat -v /app/run.sh && \
+    head -n 2 /app/run.sh | cat -v && \
     echo "--- Koniec diagnostyki run.sh ---"
-# --- KONIEC KLUCZOWYCH ZMIAN DLA DIAGNOSTYKI run.sh ---
+# --- KONIEC KLUCZOWYCH ZMIAN ---
+
+# Skopiuj resztę kodu dodatku (oprócz run.sh, który już skopiowaliśmy)
+COPY . .
 
 # Definiuje punkt wejścia do kontenera. Standardowo w HA jest to skrypt run.sh
 CMD ["/app/run.sh"]
