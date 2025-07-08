@@ -53,10 +53,9 @@ jobs:
           file: ./addon-i2c/Dockerfile
           platforms: ${{ matrix.docker_platform }}
           push: true
-          # KLUCZOWA ZMIANA TUTAJ: Wypychamy bezpośrednio pod główny tag
           tags: |
             ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:${{ env.ADDON_VERSION }}
-            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:latest # Dodajemy też tag 'latest'
+            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
