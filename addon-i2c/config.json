@@ -17,9 +17,9 @@
     "/dev/i2c-1",
     "/dev/i2c-13"
   ],
-  "url": "https://github.com/KrystianPietron/i2c-addon/tree/main/addon-i2c",
+  "url": "https://github.com/KrystianPietron/i2c-addon",
   "slug": "addon-i2c",
-  "image": "ghcr.io/krystianpietron/i2c-addon/test:latest",
+  "image": "ghcr.io/krystianpietron/i2c-addon",
   "privileged": ["SYS_RAWIO"],
   "init": false,
   "registries": [
