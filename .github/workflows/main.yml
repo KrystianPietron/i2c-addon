@@ -11,9 +11,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        arch: ["aarch64", "amd64", "armhf", "armv7", "i386"] # Buduje dla wszystkich architektur
+    # USUNIĘTO: strategy.matrix.arch - nie potrzebujemy już macierzy dla architektur,
+    # ponieważ build-push-action zajmie się tym w jednym kroku.
 
     steps:
       - name: Checkout code
@@ -35,19 +34,20 @@ jobs:
           ADDON_VERSION=$(jq -r '.version' addon-i2c/config.json)
           echo "ADDON_VERSION=$ADDON_VERSION" >> $GITHUB_ENV
         shell: bash
-        # Musisz mieć zainstalowany 'jq' na obrazie, co nie zawsze jest domyślne.
-        # Alternatywnie można parsować JSON za pomocą Pythona lub po prostu ręcznie ustawiać wersję.
-        # Jeżeli masz problem z jq, pomiń ten krok i hardkoduj wersję w tagach poniżej.
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: ./addon-i2c # Ścieżka do folderu z Dockerfile
           file: ./addon-i2c/Dockerfile # Ścieżka do Dockerfile
-          platforms: linux/${{ matrix.arch }} # Buduje dla konkretnej architektury
+          # WAŻNA ZMIANA: Lista wszystkich architektur, aby stworzyć multi-arch manifest
+          platforms: linux/aarch64,linux/amd64,linux/armhf,linux/armv7
           push: true # Wypycha obraz do GHCR
           tags: |
-            ghcr.io/${{ github.repository_owner }}/i2c-addon:${{ env.ADDON_VERSION }}-${{ matrix.arch }}
-            ghcr.io/${{ github.repository_owner }}/i2c-addon:latest-${{ matrix.arch }}
+            # WAŻNA ZMIANA: Główny tag bez sufiksu architektonicznego.
+            # To stworzy multi-arch manifest listę pod tym tagiem.
+            ghcr.io/${{ github.repository_owner }}/i2c-addon:${{ env.ADDON_VERSION }}
+            # Opcjonalnie: tag 'latest' również jako multi-arch manifest
+            ghcr.io/${{ github.repository_owner }}/i2c-addon:latest
           cache-from: type=gha # Używa cache'u GitHub Actions dla szybszych kompilacji
           cache-to: type=gha,mode=max
