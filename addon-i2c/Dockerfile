@@ -1,11 +1,10 @@
 # Dockerfile
-ARG BUILD_FROM
-ARG TARGETARCH
+ARG BUILD_FROM # Ta zmienna będzie zawierać pełną nazwę obrazu bazowego
 
-# Wybierz odpowiedni obraz bazowy na podstawie TARGETARCH (architektura, dla której jest budowany obraz)
-FROM --platform=$BUILDPLATFORM debian:bookworm-slim-${TARGETARCH}
+# Standardowa deklaracja FROM z użyciem BUILD_FROM
+FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
 
-# WAŻNA ZMIANA: Usunięto '-o pipefail'
+# Ustawienie powłoki dla wszystkich kolejnych komend RUN
 SHELL ["/bin/sh", "-c"]
 
 # Ustaw katalog roboczy
