@@ -41,8 +41,9 @@ RUN DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get update && \
     gnupg \
     libopenblas-dev \
     liblapack-dev \
-    # Dodaj dos2unix do instalacji apt
     dos2unix \
+    # Dodatkowe narzędzia diagnostyczne
+    file \
     && rm -rf /var/lib/apt/lists/*
 
 # Zainstaluj wymagane pakiety Pythona, zapisując logi do pliku, a następnie wyświetlając go
@@ -52,8 +53,24 @@ RUN pip install -v --no-cache-dir -r requirements.txt 2>&1 | tee pip_install_log
 # Skopiuj cały kod dodatku do kontenera
 COPY . .
 
-# Upewnij się, że skrypt run.sh jest wykonywalny ORAZ skonwertuj znaki końca linii
-RUN dos2unix /app/run.sh && chmod +x /app/run.sh
+# --- KLUCZOWE ZMIANY DLA DIAGNOSTYKI run.sh ---
+# 1. Sprawdź format pliku przed konwersją
+RUN echo "--- Diagnostyka run.sh przed dos2unix ---" && \
+    file /app/run.sh && \
+    echo "--- Zawartość run.sh przed dos2unix ---" && \
+    cat -v /app/run.sh
+
+# 2. Skonwertuj znaki końca linii i ustaw uprawnienia
+RUN dos2unix /app/run.sh && \
+    chmod +x /app/run.sh
+
+# 3. Sprawdź format pliku po konwersji
+RUN echo "--- Diagnostyka run.sh po dos2unix ---" && \
+    file /app/run.sh && \
+    echo "--- Zawartość run.sh po dos2unix (po konwersji) ---" && \
+    cat -v /app/run.sh && \
+    echo "--- Koniec diagnostyki run.sh ---"
+# --- KONIEC KLUCZOWYCH ZMIAN DLA DIAGNOSTYKI run.sh ---
 
 # Definiuje punkt wejścia do kontenera. Standardowo w HA jest to skrypt run.sh
 CMD ["/app/run.sh"]
