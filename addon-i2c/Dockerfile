@@ -41,8 +41,8 @@ RUN python3 -m venv /app/venv && \
 # Użyjemy . /app/ aby upewnić się, że kopiowanie odbywa się do /app,
 # ale COPY . . również działa, jeśli WORKDIR jest poprawnie ustawiony.
 # W Twoim przypadku kontekst w GitHub Actions to ./addon-i2c
-COPY . /
-# Nadaj uprawnienia do wykonania stworzonemu plikowi
-RUN chmod a+x run.sh
+COPY * /
+COPY run.sh /
+RUN chmod a+x /run.sh
 
 CMD [ "/run.sh" ]
