@@ -62,6 +62,8 @@ jobs:
           build-args: |
             BUILD_FROM=debian:bookworm-slim
 
+  # ... (pozostała część pliku main.yml, bez zmian w sekcji 'build')
+
   create_manifest:
     needs: build
     runs-on: ubuntu-latest
@@ -86,10 +88,29 @@ jobs:
           echo "ADDON_VERSION=$ADDON_VERSION" >> $GITHUB_ENV
         shell: bash
 
-      # ZWIĘKSZONE OPÓŹNIENIE
-      - name: Wait for images to be available
-        run: sleep 30 # Odczekaj 30 sekund
+      # JESZCZE DŁUŻSZE I BARDZIEJ AGRESYWNE OPÓŹNIENIE Z PĘTLĄ SPRAWDZAJĄCĄ
+      - name: Wait and verify image availability
+        run: |
+          MANIFEST_BASE=ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon
+          ADDON_VERSION=${{ env.ADDON_VERSION }}
+          ARCH_IMAGE="${MANIFEST_BASE}-aarch64:${ADDON_VERSION}"
+          
+          echo "Waiting for image ${ARCH_IMAGE} to be available in GHCR..."
+          MAX_RETRIES=5
+          RETRY_COUNT=0
+          until docker pull "${ARCH_IMAGE}" || [ $RETRY_COUNT -eq $MAX_RETRIES ]; do
+            echo "Image not yet available. Retrying in 20 seconds... (Retry: $((RETRY_COUNT + 1))/${MAX_RETRIES})"
+            sleep 20
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+          done
+
+          if [ $RETRY_COUNT -eq $MAX_RETRIES ] && ! docker pull "${ARCH_IMAGE}"; then
+            echo "Error: Image ${ARCH_IMAGE} never became available after ${MAX_RETRIES} retries."
+            exit 1
+          fi
+          echo "Image ${ARCH_IMAGE} is now available."
         shell: bash
+
 
       - name: Create manifest list and push
         run: |
@@ -97,15 +118,15 @@ jobs:
           ADDON_VERSION=${{ env.ADDON_VERSION }}
           ARCH_IMAGE="${MANIFEST_BASE}-aarch64:${ADDON_VERSION}"
 
-          echo "Attempting to pull individual image to ensure availability..."
-          docker pull "${ARCH_IMAGE}" # Spróbuj pobrać, aby wymusić indeksowanie/dostępność
-          echo "Pull successful or image already available."
+          echo "DEBUG: MANIFEST_BASE = ${MANIFEST_BASE}"
+          echo "DEBUG: ADDON_VERSION = ${ADDON_VERSION}"
+          echo "DEBUG: ARCH_IMAGE = ${ARCH_IMAGE}"
 
-          echo "Creating manifest for ${MANIFEST_BASE}:${ADDON_VERSION} with image: ${ARCH_IMAGE}"
-          docker manifest create ${MANIFEST_BASE}:${ADDON_VERSION} ${ARCH_IMAGE}
-          docker manifest push ${MANIFEST_BASE}:${ADDON_VERSION}
+          echo "Attempting to create manifest for ${MANIFEST_BASE}:${ADDON_VERSION}"
+          docker manifest create --verbose ${MANIFEST_BASE}:${ADDON_VERSION} ${ARCH_IMAGE} || { echo "Manifest create failed!"; exit 1; }
+          docker manifest push --verbose ${MANIFEST_BASE}:${ADDON_VERSION} || { echo "Manifest push failed!"; exit 1; }
 
-          echo "Creating manifest for ${MANIFEST_BASE}:latest with image: ${ARCH_IMAGE}"
-          docker manifest create ${MANIFEST_BASE}:latest ${ARCH_IMAGE}
-          docker manifest push ${MANIFEST_BASE}:latest
+          echo "Attempting to create manifest for ${MANIFEST_BASE}:latest"
+          docker manifest create --verbose ${MANIFEST_BASE}:latest ${ARCH_IMAGE} || { echo "Manifest latest create failed!"; exit 1; }
+          docker manifest push --verbose ${MANIFEST_BASE}:latest || { echo "Manifest latest push failed!"; exit 1; }
         shell: bash
