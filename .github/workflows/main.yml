@@ -5,12 +5,12 @@ on:
     branches:
       - main
     paths:
-      - 'addon-i2c/**'
+      - 'addon-i2c/**' # Monitoruj zmiany tylko w tym folderze
   workflow_dispatch:
 
 permissions:
   contents: read
-  packages: write
+  packages: write # NADANIE UPRAWNIEŃ DO ZAPISU PAKIETÓW!
 
 jobs:
   build:
@@ -19,7 +19,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Tylko architektura aarch64 (arm64)
           - arch: aarch64
             docker_platform: linux/arm64/v8
 
@@ -40,14 +39,12 @@ jobs:
       - name: Set lowercase repository owner
         id: set_repo_owner_lowercase
         run: echo "REPO_OWNER_LOWERCASE=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-        shell: bash
 
       - name: Get addon version from config.json
         id: get_version
         run: |
-          ADDON_VERSION=$(jq -r '.version' addon-i2c/config.json)
+          ADDON_VERSION=$(jq -r '.version' ./addon-i2c/config.json)
           echo "ADDON_VERSION=$ADDON_VERSION" >> $GITHUB_ENV
-        shell: bash
 
       - name: Build and push Docker image for ${{ matrix.arch }}
         uses: docker/build-push-action@v5
@@ -68,6 +65,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout code 
+        uses: actions/checkout@v4
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -78,37 +78,26 @@ jobs:
       - name: Set lowercase repository owner
         id: set_repo_owner_lowercase
         run: echo "REPO_OWNER_LOWERCASE=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-        shell: bash
 
-      - name: Get addon version from config.json
-        id: get_version
+      - name: Get addon version from config.json (Manifest Job)
+        id: get_version_manifest
         run: |
-          ADDON_VERSION=$(jq -r '.version' addon-i2c/config.json)
+          ADDON_VERSION=$(jq -r '.version' ./addon-i2c/config.json)
           echo "ADDON_VERSION=$ADDON_VERSION" >> $GITHUB_ENV
-        shell: bash
 
-      - name: Wait for images to be available
-        run: sleep 15 # Odczekaj 15 sekund
-        shell: bash
-
-      - name: Create manifest list and push
+      - name: Agresywnie poczekaj na dostępność obrazu
         run: |
-          MANIFEST_TAG=ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:${{ env.ADDON_VERSION }}
-          LATEST_TAG=ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:latest
+          echo "Odczekuję 60 sekund, aby dać GHCR czas na indeksowanie obrazu..."
+          sleep 60
 
-          IMAGES_TO_MANIFEST=(
-            ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon-aarch64:${{ env.ADDON_VERSION }}
-          )
+      - name: Create and push Docker manifest
+        run: |
+          MANIFEST_BASE=ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon
+          ADDON_VERSION=${{ env.ADDON_VERSION }}
+          ARCH_IMAGE="${MANIFEST_BASE}-aarch64:${ADDON_VERSION}"
 
-          echo "Creating manifest for ${MANIFEST_TAG} with images: ${IMAGES_TO_MANIFEST[@]}"
-          docker manifest create ${MANIFEST_TAG} ${IMAGES_TO_MANIFEST[@]}
+          echo "Tworzę manifest dla wersji: ${ADDON_VERSION}"
+          echo "Obraz źródłowy: ${ARCH_IMAGE}"
 
-          echo "Pushing manifest ${MANIFEST_TAG}"
-          docker manifest push ${MANIFEST_TAG}
-
-          echo "Creating manifest for ${LATEST_TAG} with images: ${IMAGES_TO_MANIFEST[@]}"
-          docker manifest create ${LATEST_TAG} ${IMAGES_TO_MANIFEST[@]}
-
-          echo "Pushing manifest ${LATEST_TAG}"
-          docker manifest push ${LATEST_TAG}
-        shell: bash
+          docker manifest create ${MANIFEST_BASE}:${ADDON_VERSION} ${ARCH_IMAGE}
+          docker manifest push ${MANIFEST_BASE}:${ADDON_VERSION}
