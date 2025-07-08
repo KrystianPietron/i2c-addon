@@ -15,8 +15,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     libtool ca-certificates curl gnupg libopenblas-dev liblapack-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install -v --no-cache-dir -r requirements.txt
+RUN python3 -m venv /app/venv && \
+    /app/venv/bin/pip install -v --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["python3", "/app/main.py"]
+CMD ["/app/venv/bin/python", "/app/main.py"]
