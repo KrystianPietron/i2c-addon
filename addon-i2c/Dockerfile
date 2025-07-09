@@ -1,7 +1,7 @@
 ARG BUILD_FROM=debian:bookworm-slim
 FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
 
-#WORKDIR /app
+WORKDIR /app
 
 COPY requirements.txt .
 
@@ -43,8 +43,5 @@ RUN python3 -m venv /app/venv && \
 COPY . /app
 COPY run.sh /app/run.sh
 RUN echo "====== LISTA ROOT ======" && ls -la / && echo "====== RUN.SH ======" && cat -A /app/run.sh
-#RUN echo "==== / ====" && ls -la /
-#RUN echo "==== /app ====" && ls -la /app
 RUN chmod a+x /app/run.sh
-WORKDIR /app
-CMD [ "/app/run.sh" ]
+CMD [ "./app/run.sh" ]
