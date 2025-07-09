@@ -54,4 +54,4 @@ EOF
 # Nadaj uprawnienia do wykonania stworzonemu plikowi
 RUN chmod a+x /app/run.sh
 
-CMD [ "/run.sh" ]
+CMD [ "/app/run.sh" ]
