@@ -41,11 +41,8 @@ RUN python3 -m venv /app/venv && \
 COPY .. /
 RUN <<EOF > /app/run.sh
 #!/usr/bin/with-contenv bashio
-set -e
 
 echo "Starting my Python add-on..."
-
-# Uruchom Twój skrypt Pythona
 python3 addon-i2c/main.py
 
 echo "Python add-on finished."
