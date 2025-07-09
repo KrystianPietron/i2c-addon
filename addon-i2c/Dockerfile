@@ -47,6 +47,6 @@ RUN echo '#!/usr/bin/with-contenv bashio' > /app/run.sh && \
     echo 'echo "Python add-on finished."' >> /app/run.sh && \
     chmod a+x /app/run.sh
 
-COPY .. /
+#COPY .. /
 
 CMD ["./run.sh"]
