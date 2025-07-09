@@ -39,18 +39,14 @@ RUN python3 -m venv /app/venv && \
     /app/venv/bin/pip install --no-cache-dir -r requirements.txt
 
 
-RUN <<EOF > /app/run.sh
-#!/usr/bin/with-contenv bashio
+# Stwórz run.sh przez echo — BEZ heredoc
+RUN echo '#!/usr/bin/env bash' > /app/run.sh && \
+    echo 'echo "Hello world!"' >> /app/run.sh && \
+    echo 'echo "Starting my Python add-on..."' >> /app/run.sh && \
+    echo 'python3 /addon-i2c/main.py' >> /app/run.sh && \
+    echo 'echo "Python add-on finished."' >> /app/run.sh && \
+    chmod a+x /app/run.sh
 
-echo "Hello world!"
-
-echo "Starting my Python add-on..."
-python3 /addon-i2c/main.py
-
-echo "Python add-on finished."
-EOF
-# Nadaj uprawnienia do wykonania stworzonemu plikowi
 COPY .. /
-RUN chmod a+x /app/run.sh
 
-CMD [ "./run.sh" ]
+CMD ["./run.sh"]
