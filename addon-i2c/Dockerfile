@@ -1,7 +1,8 @@
 ARG BUILD_FROM=debian:bookworm-slim
 FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
 
-COPY rootfs /
+# Skopiuj to, co trzeba — jawnie!
+COPY rootfs/ /
 COPY requirements.txt .
 COPY run.sh /run.sh
 
@@ -34,12 +35,11 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
       liblapack-dev \
  && rm -rf /var/lib/apt/lists/*
 
-
+# Stwórz venv i zainstaluj wymagania
 RUN python3 -m venv /venv && \
     /venv/bin/pip install --no-cache-dir -r requirements.txt
 
-# Nadaj uprawnienia do wykonania stworzonemu plikowi
-COPY . /
-RUN chmod a+x /run.sh
+# Nadaj prawo do wykonania
+RUN chmod +x /run.sh
 
 CMD [ "/run.sh" ]

@@ -3,6 +3,10 @@ set -e
 
 echo "Starting my Python add-on..."
 
-python3 /addon-i2c/main.py
+# Aktywuj virtualenv (jeśli korzystasz)
+source /venv/bin/activate
+
+# Odpal główny skrypt Pythona
+python3 /main.py
 
 echo "Python add-on finished."
