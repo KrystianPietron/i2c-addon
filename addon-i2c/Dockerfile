@@ -1,5 +1,8 @@
+# Dockerfile
 ARG BUILD_FROM=debian:bookworm-slim
 FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
+
+SHELL ["/bin/sh", "-c"]
 
 COPY requirements.txt .
 
