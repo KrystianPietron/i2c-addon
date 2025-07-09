@@ -42,6 +42,6 @@ COPY . /
 COPY run.sh /run.sh
 
 # Nadaj prawo do wykonania
-RUN chmod a+x /app/run.sh
+RUN chmod a+x /run.sh
 
 CMD [ "/app/run.sh" ]
