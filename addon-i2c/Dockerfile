@@ -52,6 +52,6 @@ echo "Python add-on finished."
 EOF
 
 # Nadaj uprawnienia do wykonania stworzonemu plikowi
-RUN chmod a+x /run.sh
+RUN chmod a+x /app/run.sh
 
 CMD [ "/run.sh" ]
