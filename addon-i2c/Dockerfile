@@ -41,4 +41,4 @@ RUN python3 -m venv /venv && \
 COPY . /
 RUN chmod a+x /run.sh
 
-CMD [ "/run.sh" ]
+CMD [ "/addon-i2c/run.sh" ]
