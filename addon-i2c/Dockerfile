@@ -1,9 +1,6 @@
 ARG BUILD_FROM=debian:bookworm-slim
 FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
 
-#ARG BUILD_FROM
-#FROM $BUILD_FROM
-
 COPY requirements.txt .
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
@@ -43,4 +40,4 @@ RUN python3 -m venv /app/venv && \
 COPY .. /
 RUN chmod a+x /run.sh
 
-CMD [ "/run.sh" ]
+CMD ["/run.sh"s]
