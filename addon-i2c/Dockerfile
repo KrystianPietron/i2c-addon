@@ -38,7 +38,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 RUN python3 -m venv /app/venv && \
     /app/venv/bin/pip install --no-cache-dir -r requirements.txt
 
-
+COPY .. /
 RUN <<EOF > /app/run.sh
 #!/usr/bin/with-contenv bashio
 set -e
@@ -52,7 +52,6 @@ echo "Python add-on finished."
 EOF
 
 # Nadaj uprawnienia do wykonania stworzonemu plikowi
-COPY .. /
 RUN chmod a+x /run.sh
 
 CMD [ "/run.sh" ]
