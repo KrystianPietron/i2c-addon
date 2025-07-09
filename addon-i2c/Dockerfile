@@ -32,12 +32,12 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
       liblapack-dev \
  && rm -rf /var/lib/apt/lists/*
 
-
 RUN python3 -m venv /app/venv && \
     /app/venv/bin/pip install --no-cache-dir -r requirements.txt
 
 # Copy data for add-on
 COPY .. /
+COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 
 CMD ["/run.sh"]
