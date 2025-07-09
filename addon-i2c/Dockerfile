@@ -1,8 +1,6 @@
 ARG BUILD_FROM=debian:bookworm-slim
 FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
 
-WORKDIR /app
-
 COPY requirements.txt .
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
@@ -35,13 +33,13 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
  && rm -rf /var/lib/apt/lists/*
 
 
-RUN python3 -m venv /app/venv && \
-    /app/venv/bin/pip install --no-cache-dir -r requirements.txt
+RUN python3 -m venv /venv && \
+    /venv/bin/pip install --no-cache-dir -r requirements.txt
 
 
 # Nadaj uprawnienia do wykonania stworzonemu plikowi
-COPY . /app
-COPY run.sh /app/run.sh
-RUN echo "====== LISTA ROOT ======" && ls -la / && echo "====== RUN.SH ======" && cat -A /app/run.sh
-RUN chmod a+x /app/run.sh
-CMD [ "/app/run.sh" ]
+COPY .. /
+COPY run.sh /run.sh
+RUN echo "====== LISTA ROOT ======" && ls -la / && echo "====== RUN.SH ======" && cat -A /run.sh
+RUN chmod a+x /run.sh
+CMD [ "/run.sh" ]
