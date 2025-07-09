@@ -3,6 +3,7 @@ FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
 
 COPY rootfs /
 COPY requirements.txt .
+COPY run.sh /run.sh
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -41,4 +42,4 @@ RUN python3 -m venv /venv && \
 COPY . /
 RUN chmod a+x /run.sh
 
-CMD [ "/addon-i2c/run.sh" ]
+CMD [ "/run.sh" ]
