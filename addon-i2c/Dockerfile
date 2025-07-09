@@ -40,7 +40,7 @@ RUN python3 -m venv /app/venv && \
 
 
 # Stwórz run.sh przez echo — BEZ heredoc
-RUN echo '#!/usr/bin/env bash' > /app/run.sh && \
+RUN echo '#!/usr/bin/with-contenv bashio' > /app/run.sh && \
     echo 'echo "Hello world!"' >> /app/run.sh && \
     echo 'echo "Starting my Python add-on..."' >> /app/run.sh && \
     echo 'python3 /addon-i2c/main.py' >> /app/run.sh && \
