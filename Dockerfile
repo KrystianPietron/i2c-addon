@@ -1,7 +1,7 @@
 ARG BUILD_FROM=debian:bookworm-slim
 FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
 
-WORKDIR /app
+#WORKDIR /app
 
 COPY rootfs /
 COPY requirements.txt .
@@ -40,20 +40,20 @@ RUN python3 -m venv /app/venv && \
     /app/venv/bin/pip install --no-cache-dir -r requirements.txt
 
 
-RUN <<EOF > /app/run.sh
+RUN <<EOF > /run.sh
 #!/usr/bin/with-contenv bashio
 set -e
 
 echo "Starting my Python add-on..."
 
 # Uruchom Twój skrypt Pythona
-python3 /app/main.py
+python3 /main.py
 
 echo "Python add-on finished."
 EOF
 
 # Nadaj uprawnienia do wykonania stworzonemu plikowi
 COPY .. /
-RUN chmod a+x /app/run.sh
+RUN chmod a+x /run.sh
 
-CMD [ "/app/run.sh" ]
+CMD [ "/run.sh" ]
