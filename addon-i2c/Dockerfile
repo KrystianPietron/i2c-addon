@@ -38,7 +38,7 @@ RUN python3 -m venv /venv && \
     /venv/bin/pip install --no-cache-dir -r requirements.txt
 
 # Nadaj uprawnienia do wykonania stworzonemu plikowi
-COPY * /
+COPY . /
 RUN chmod a+x /run.sh
 
 CMD [ "/run.sh" ]
