@@ -1,5 +1,4 @@
 #!/usr/bin/with-contenv bashio
-set -e
 
 echo "Starting my Python add-on..."
 
