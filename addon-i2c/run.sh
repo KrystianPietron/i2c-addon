@@ -4,7 +4,7 @@ set -e
 echo "Starting my Python add-on..."
 
 # Aktywuj virtualenv (jeśli korzystasz)
-source /venv/bin/activate
+source /app/venv/bin/activate
 
 # Odpal główny skrypt Pythona
 python3 /main.py
