@@ -39,21 +39,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 RUN python3 -m venv /venv && \
     /venv/bin/pip install --no-cache-dir -r requirements.txt
 
-
-#RUN <<EOF > /run.sh
-##!/usr/bin/with-contenv bashio
-#set -e
-#
-#echo "Starting my Python add-on..."
-#
-## Uruchom Twój skrypt Pythona
-#python3 /main.py
-#
-#echo "Python add-on finished."
-#EOF
-
 # Nadaj uprawnienia do wykonania stworzonemu plikowi
 COPY .. /
+COPY run.sh /
 RUN chmod a+x /run.sh
 
 CMD [ "/run.sh" ]
