@@ -4,7 +4,6 @@ FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
 # Skopiuj to, co trzeba — jawnie!
 COPY rootfs/ /
 COPY requirements.txt .
-COPY run.sh /run.sh
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -38,8 +37,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 # Stwórz venv i zainstaluj wymagania
 RUN python3 -m venv /venv && \
     /venv/bin/pip install --no-cache-dir -r requirements.txt
+COPY run.sh /run.sh
 
 # Nadaj prawo do wykonania
-RUN chmod +x /run.sh
+RUN chmod a+x /run.sh
 
 CMD [ "/run.sh" ]
