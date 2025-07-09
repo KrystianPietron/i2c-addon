@@ -44,4 +44,4 @@ COPY . /app
 COPY run.sh /app/run.sh
 RUN echo "====== LISTA ROOT ======" && ls -la / && echo "====== RUN.SH ======" && cat -A /app/run.sh
 RUN chmod a+x /app/run.sh
-CMD [ "./app/run.sh" ]
+CMD [ "/app/run.sh" ]
