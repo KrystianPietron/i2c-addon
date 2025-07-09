@@ -38,10 +38,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 # Stwórz venv i zainstaluj wymagania
 RUN python3 -m venv /app/venv && \
     /app/venv/bin/pip install --no-cache-dir -r requirements.txt
-COPY . /
-COPY run.sh /run.sh
+COPY . /app/
 
-# Nadaj prawo do wykonania
-RUN chmod a+x /run.sh
+COPY run.sh /app/run.sh
+
+RUN chmod +x /app/run.sh
 
 CMD [ "/app/run.sh" ]
