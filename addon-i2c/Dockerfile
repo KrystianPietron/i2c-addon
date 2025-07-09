@@ -53,7 +53,7 @@ RUN python3 -m venv /venv && \
 #EOF
 
 # Nadaj uprawnienia do wykonania stworzonemu plikowi
-COPY ../.. /
+COPY .. /
 RUN chmod a+x /run.sh
 
 CMD [ "/run.sh" ]
