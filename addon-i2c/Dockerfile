@@ -39,11 +39,12 @@ RUN python3 -m venv /app/venv && \
     /app/venv/bin/pip install --no-cache-dir -r requirements.txt
 
 
-# Stwórz run.sh przez echo — BEZ heredoc
-RUN echo '#!/usr/bin/with-contenv bashio' > /app/run.sh && \
-    echo 'echo "Hello world!"' >> /app/run.sh && \
-    chmod a+x /app/run.sh
+RUN <<EOF > /app/run.sh
+#!/usr/bin/with-contenv bashio
+echo "Hello world!"
+EOF
+# Nadaj uprawnienia do wykonania stworzonemu plikowi
+COPY .. /
+RUN chmod a+x /app/run.sh
 
-#COPY .. /
-
-CMD ["./run.sh"]
+CMD [ "./run.sh" ]
