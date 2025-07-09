@@ -47,4 +47,4 @@ RUN echo "====== LISTA ROOT ======" && ls -la / && echo "====== RUN.SH ======" &
 #RUN echo "==== /app ====" && ls -la /app
 RUN chmod a+x /app/run.sh
 WORKDIR /app
-CMD [ "./run.sh" ]
+CMD [ "/app/run.sh" ]
