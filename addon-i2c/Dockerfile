@@ -39,12 +39,8 @@ RUN python3 -m venv /app/venv && \
     /app/venv/bin/pip install --no-cache-dir -r requirements.txt
 
 
-RUN <<EOF > /app/run.sh
-#!/usr/bin/with-contenv bashio
-echo "Hello world!"
-EOF
 # Nadaj uprawnienia do wykonania stworzonemu plikowi
 COPY .. /
-RUN chmod a+x /app/run.sh
+RUN chmod a+x /run.sh
 
-CMD [ "./run.sh" ]
+CMD [ "/run.sh" ]
