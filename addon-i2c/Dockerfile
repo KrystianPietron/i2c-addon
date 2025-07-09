@@ -33,8 +33,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
  && rm -rf /var/lib/apt/lists/*
 
 
-RUN python3 -m venv /venv && \
-    /venv/bin/pip install --no-cache-dir -r requirements.txt
+RUN python3 -m venv /app/venv && \
+    /app/venv/bin/pip install --no-cache-dir -r requirements.txt
 
 
 # Nadaj uprawnienia do wykonania stworzonemu plikowi
