@@ -38,8 +38,8 @@ RUN python3 -m venv /venv && \
 
 
 # Nadaj uprawnienia do wykonania stworzonemu plikowi
-COPY .. /
+COPY . /app
 COPY run.sh /run.sh
-RUN echo "====== LISTA ROOT ======" && ls -la / && echo "====== RUN.SH ======" && cat -A /run.sh
 RUN chmod a+x /run.sh
+
 CMD [ "/run.sh" ]
