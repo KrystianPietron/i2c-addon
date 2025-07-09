@@ -41,7 +41,6 @@ RUN python3 -m venv /app/venv && \
 
 RUN <<EOF > /app/run.sh
 #!/usr/bin/with-contenv bashio
-set -e
 
 echo "Hello world!"
 
