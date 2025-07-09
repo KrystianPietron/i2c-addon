@@ -50,9 +50,8 @@ python3 /addon-i2c/main.py
 
 echo "Python add-on finished."
 EOF
-
 # Nadaj uprawnienia do wykonania stworzonemu plikowi
-COPY .. /
-RUN chmod a+x /run.sh
+COPY . /
+RUN chmod a+x /app/run.sh
 
-CMD [ "/run.sh" ]
+CMD [ "./run.sh" ]
