@@ -39,7 +39,7 @@ RUN python3 -m venv /app/venv && \
     /app/venv/bin/pip install --no-cache-dir -r requirements.txt
 
 # Copy data for add-on
-COPY .. /app
+COPY . /app
 RUN chmod a+x /app/run.sh
 
 CMD ["/app/run.sh"]
