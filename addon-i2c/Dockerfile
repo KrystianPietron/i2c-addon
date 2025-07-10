@@ -4,7 +4,7 @@ FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
 
 COPY requirements.txt .
 
-WORKDIR app
+WORKDIR /app
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y --no-install-recommends \
