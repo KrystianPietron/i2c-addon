@@ -4,6 +4,8 @@ FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
 
 COPY requirements.txt .
 
+WORKDIR app
+
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y --no-install-recommends \
       build-essential \
@@ -37,7 +39,7 @@ RUN python3 -m venv /app/venv && \
     /app/venv/bin/pip install --no-cache-dir -r requirements.txt
 
 # Copy data for add-on
-COPY . .
-RUN chmod a+x /run.sh
+COPY . /app
+RUN chmod a+x /app/run.sh
 
-CMD ["/run.sh"]
+CMD ["./run.sh"]
