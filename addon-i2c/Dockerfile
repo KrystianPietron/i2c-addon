@@ -7,8 +7,8 @@ WORKDIR /
 COPY requirements.txt .
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
-    apt-get install -y bash \
     apt-get install -y --no-install-recommends \
+      bash \
       build-essential \
       gcc \
       python3-dev \
