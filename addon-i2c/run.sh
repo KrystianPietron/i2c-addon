@@ -1,9 +1,7 @@
 #!/usr/bin/with-contenv bashio
-set -e
 
-echo "Starting my Python add-on..."
+echo "Starting add-on i2c..."
 
-# Uruchom Twój skrypt Pythona
-python3 main.py
+python3 /main.py
 
 echo "Python add-on finished."

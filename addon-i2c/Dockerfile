@@ -4,7 +4,9 @@ FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
 
 WORKDIR /
 
-COPY requirements.txt .
+COPY run.sh /run.sh
+COPY main.py /main.py
+COPY requirements.txt /requirements.txt
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y --no-install-recommends \
