@@ -27,7 +27,7 @@ jobs:
 
       - name: Get addon version
         run: |
-          ADDON_VERSION=$(jq -r '.version' ./config.json)
+          ADDON_VERSION=$(jq -r '.version' ./addon-i2c/config.json)
           echo "ADDON_VERSION=$ADDON_VERSION" >> $GITHUB_ENV
 
       - name: Build singlearch ARM64
@@ -35,9 +35,9 @@ jobs:
           docker build \
             --platform linux/arm64/v8 \
             --build-arg BUILD_FROM=debian:bookworm-slim \
-            -t ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}:${{ env.ADDON_VERSION }} \
-            ./
+            -t ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:${{ env.ADDON_VERSION }} \
+            ./addon-i2c
 
       - name: Push image
         run: |
-          docker push ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}:${{ env.ADDON_VERSION }}
+          docker push ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:${{ env.ADDON_VERSION }}
