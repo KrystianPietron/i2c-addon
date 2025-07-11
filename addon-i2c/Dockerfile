@@ -2,8 +2,8 @@
 ARG BUILD_FROM=debian:bookworm-slim
 FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
 
-WORKDIR /
-COPY requirements.txt /requirements.txt
+WORKDIR /app
+COPY requirements.txt /app/requirements.txt
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -38,8 +38,8 @@ RUN python3 -m venv /app/venv && \
     /app/venv/bin/pip install --no-cache-dir -r requirements.txt
 
 # Copy data for add-on
-COPY run.sh /run.sh
-COPY main.py /main.py
-RUN chmod a+x /run.sh
+COPY run.sh /app/run.sh
+COPY main.py /app/main.py
+RUN chmod a+x /app/run.sh
 
-CMD ["/run.sh"]
+CMD ["./run.sh"]
