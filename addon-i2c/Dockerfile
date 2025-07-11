@@ -42,4 +42,4 @@ COPY run.sh /
 COPY main.py /
 RUN chmod a+x /run.sh
 
-CMD ["./run.sh"]
+CMD ["/run.sh"]
