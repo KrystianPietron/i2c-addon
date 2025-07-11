@@ -2,8 +2,6 @@
 ARG BUILD_FROM=debian:bookworm-slim
 FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
 
-WORKDIR /
-
 COPY run.sh /run.sh
 COPY main.py /main.py
 COPY requirements.txt /requirements.txt
@@ -42,7 +40,7 @@ RUN python3 -m venv /app/venv && \
 
 # Copy data for add-on
 COPY . /
-COPY run.sh /run.sh
+#COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 
 CMD ["/run.sh"]
