@@ -8,7 +8,6 @@ COPY requirements.txt .
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y --no-install-recommends \
-      bash \
       bashio \
       build-essential \
       gcc \
