@@ -27,7 +27,7 @@ jobs:
 
       - name: Get addon version
         run: |
-          ADDON_VERSION=$(jq -r '.version' ./addon-i2c/config.json)
+          ADDON_VERSION=$(jq -r '.version' ./config.json)
           echo "ADDON_VERSION=$ADDON_VERSION" >> $GITHUB_ENV
 
       - name: Build singlearch ARM64
