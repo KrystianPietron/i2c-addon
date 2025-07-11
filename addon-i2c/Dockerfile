@@ -2,7 +2,8 @@
 ARG BUILD_FROM=debian:bookworm-slim
 FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
 
-COPY requirements.txt /
+WORKDIR /
+COPY requirements.txt /requirements.txt
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y --no-install-recommends \
