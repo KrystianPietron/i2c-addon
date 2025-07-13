@@ -40,4 +40,4 @@ RUN python3 -m venv /app/venv && \
 
 COPY . .
 
-CMD ["/app/venv/bin/python", "/app/main.py"]
+CMD ["python3", "/app/main.py"]
