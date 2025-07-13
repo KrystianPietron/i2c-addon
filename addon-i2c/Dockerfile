@@ -1,8 +1,9 @@
-# Dockerfile
 ARG BUILD_FROM=debian:bookworm-slim
 FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
 
-COPY requirements.txt /
+WORKDIR /app
+
+COPY requirements.txt .
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -33,12 +34,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
       liblapack-dev \
  && rm -rf /var/lib/apt/lists/*
 
+
 RUN python3 -m venv /app/venv && \
     /app/venv/bin/pip install --no-cache-dir -r requirements.txt
 
-# Copy data for add-on
-COPY run.sh /
-COPY main.py /
-RUN chmod a+x /run.sh
+COPY . .
 
-CMD ["/run.sh"]
+CMD ["/app/venv/bin/python", "/app/main.py"]
