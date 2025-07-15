@@ -39,7 +39,7 @@ RUN python3 -m venv /app/venv && \
     /app/venv/bin/pip install --no-cache-dir -r requirements.txt
 
 
-COPY . .
+COPY . /
 RUN chmod 777 run.sh
 
 CMD ["/run.sh"]
