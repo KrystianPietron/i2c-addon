@@ -34,7 +34,7 @@ jobs:
         run: |
           docker build \
             --platform linux/arm64/v8 \
-            --build-arg BUILD_FROM=debian:bookworm-slim \
+            --build-arg BUILD_FROM=ghcr.io/home-assistant/arm64-base-python:3.12 \
             -t ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:${{ env.ADDON_VERSION }} \
             ./addon-i2c
 
