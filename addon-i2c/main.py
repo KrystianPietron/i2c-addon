@@ -1,16 +1,16 @@
 import asyncio
 
-import logging
+# import logging
 
 from sensors.oledBlueYellow0x3C import OledBlueYellow0x3c
 from sensors.oledBueYellow0x3D import OledBlueYellow0x3d
 from sensors.oledWhite0x3c import OledWhite0x3c
 
+import logging
+
 logging.basicConfig(
-    filename="/home/pi/oled/log.txt",
-    filemode="a",
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    level=logging.DEBUG
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
 async def main():
