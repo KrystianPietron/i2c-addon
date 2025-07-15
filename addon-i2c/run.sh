@@ -1,5 +1,4 @@
 #!/usr/bin/with-contenv bashio
-exec /app/run.sh
 
 echo "Starting I2C add-on..."
 
