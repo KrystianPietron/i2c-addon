@@ -3,7 +3,7 @@ name: Build Singlearch ARM64
 on:
   push:
     branches: [ main ]
-    paths: [ '../..' ]
+    paths: [ 'addon-i2c/**' ]
   workflow_dispatch:
 
 permissions:
