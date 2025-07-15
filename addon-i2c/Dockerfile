@@ -1,14 +1,15 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     i2c-tools \
     python3-dev \
-    py3-pip \
-    build-base \
+    python3-pip \
+    build-essential \
     libffi-dev \
-    libusb-dev \
-    libgpiod-dev
+    libusb-1.0-0-dev \
+    libgpiod-dev \
+ && rm -rf /var/lib/apt/lists/* \
 
 WORKDIR /app
 
