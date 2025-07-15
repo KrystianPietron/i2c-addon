@@ -1,7 +1,7 @@
 ARG BUILD_FROM=debian:bookworm-slim
 FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
 
-#WORKDIR /app
+WORKDIR /app
 
 COPY requirements.txt .
 
@@ -39,7 +39,7 @@ RUN python3 -m venv /app/venv && \
     /app/venv/bin/pip install --no-cache-dir -r requirements.txt
 
 
-COPY . /
-RUN chmod 777 run.sh
+COPY . /app
+RUN sudo chmod -R 777 /app
 
-CMD ["/run.sh"]
+CMD ["./run.sh"]

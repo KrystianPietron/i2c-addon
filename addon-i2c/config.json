@@ -1,6 +1,6 @@
 {
   "name": "i2c addon",
-  "version": "1.0.5.120-build",
+  "version": "1.0.5.121-build",
   "description": "Obsługa wyświetlaczy i2c",
   "arch": [
     "aarch64"
