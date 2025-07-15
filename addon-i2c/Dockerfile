@@ -1,45 +1,21 @@
-ARG BUILD_FROM=debian:bookworm-slim
-FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
+ARG BUILD_FROM
+FROM ${BUILD_FROM}
+
+RUN apk add --no-cache \
+    i2c-tools \
+    python3-dev \
+    py3-pip \
+    build-base \
+    libffi-dev \
+    libusb-dev \
+    libgpiod-dev
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY requirements.txt /app/
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
-    apt-get install -y --no-install-recommends \
-      build-essential \
-      gcc \
-      python3-dev \
-      python3-pip \
-      python3-venv \
-      libffi-dev \
-      libusb-1.0-0-dev \
-      libgpiod-dev \
-      libjpeg-dev \
-      zlib1g-dev \
-      libtiff-dev \
-      libfreetype6-dev \
-      i2c-tools \
-      python3-smbus \
-      pkg-config \
-      libxml2-dev \
-      libxslt1-dev \
-      automake \
-      autoconf \
-      libtool \
-      ca-certificates \
-      curl \
-      gnupg \
-      libopenblas-dev \
-      liblapack-dev \
- && rm -rf /var/lib/apt/lists/*
-
-
-RUN python3 -m venv /app/venv && \
-    /app/venv/bin/pip install --no-cache-dir -r requirements.txt
-
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
 COPY . /app
-RUN chmod -R 777 /app
 
-CMD ["/app/run.sh"]
+RUN chmod a+x /etc/services.d/i2c/run
