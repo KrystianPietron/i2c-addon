@@ -1,6 +1,6 @@
 {
   "name": "i2c addon",
-  "version": "1.0.5.133-build",
+  "version": "1.0.5.134-build",
   "description": "Obsługa wyświetlaczy i2c",
   "arch": [
     "aarch64"
@@ -20,7 +20,7 @@
   "init": true,
   "build": {
     "args": {
-      "BUILD_FROM": "homeassistant/{arch}-base-python:3.12"
+      "BUILD_FROM": "homeassistant/{arch}-base:latest"
     }
   }
 }
