@@ -40,6 +40,6 @@ RUN python3 -m venv /app/venv && \
 
 
 COPY . /app
-RUN sudo chmod -R 777 /app
+RUN chmod -R 777 /app
 
 CMD ["./run.sh"]
