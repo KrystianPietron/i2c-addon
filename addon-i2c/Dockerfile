@@ -18,5 +18,5 @@ COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
 COPY . /app
-COPY services /etc/services.d
+COPY rootfs/ /
 RUN chmod a+x /etc/services.d/i2c/run
