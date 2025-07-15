@@ -1,4 +1,4 @@
-name: Build Singlearch ARM64
+name: Build singlearch aarch64
 
 on:
   push:
@@ -34,12 +34,11 @@ jobs:
       - name: Set lowercase repo owner
         run: echo "REPO_OWNER_LOWERCASE=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
-      - name: Build and push multiarch
+      - name: Build and push aarch64
         run: |
           docker buildx build \
-            --platform linux/amd64,linux/arm64/v8 \
-            --build-arg BUILD_FROM=ghcr.io/home-assistant/{arch}-base-python:3.12 \
+            --platform linux/arm64/v8 \
+            --build-arg BUILD_FROM=ghcr.io/home-assistant/aarch64-base-python:3.12 \
             -t ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:${{ env.ADDON_VERSION }} \
-            -t ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:latest \
             --push \
             ./addon-i2c
