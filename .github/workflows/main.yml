@@ -38,7 +38,6 @@ jobs:
         run: |
           docker buildx build \
             --platform linux/arm64/v8 \
-            --build-arg BUILD_FROM=ghcr.io/home-assistant/arm64-base:latest \
             -t ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:${{ env.ADDON_VERSION }} \
             --push \
             ./addon-i2c

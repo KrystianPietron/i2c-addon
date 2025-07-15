@@ -1,5 +1,5 @@
 ARG BUILD_FROM
-FROM ${BUILD_FROM}
+FROM python:3.12-slim-bullseye
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     i2c-tools \
@@ -18,5 +18,7 @@ COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
 COPY . /app
-COPY rootfs/ /
-RUN chmod a+x /etc/services.d/i2c/run
+
+RUN chmod a+x /app/run.sh
+
+CMD ["/app/run.sh"]

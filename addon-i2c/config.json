@@ -1,6 +1,6 @@
 {
   "name": "i2c addon",
-  "version": "1.0.5.134-build",
+  "version": "1.0.5.135-build",
   "description": "Obsługa wyświetlaczy i2c",
   "arch": [
     "aarch64"
@@ -17,10 +17,5 @@
   "slug": "addon-i2c",
   "image": "ghcr.io/krystianpietron/i2c-addon",
   "privileged": ["SYS_RAWIO"],
-  "init": true,
-  "build": {
-    "args": {
-      "BUILD_FROM": "homeassistant/{arch}-base:latest"
-    }
-  }
+  "init": true
 }
