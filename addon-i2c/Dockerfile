@@ -1,7 +1,7 @@
 ARG BUILD_FROM=debian:bookworm-slim
 FROM --platform=$BUILDPLATFORM ${BUILD_FROM}
 
-WORKDIR /app
+#WORKDIR /app
 
 COPY requirements.txt .
 
