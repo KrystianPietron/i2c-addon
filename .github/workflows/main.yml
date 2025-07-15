@@ -31,16 +31,15 @@ jobs:
           ADDON_VERSION=$(jq -r '.version' ./addon-i2c/config.json)
           echo "ADDON_VERSION=$ADDON_VERSION" >> $GITHUB_ENV
 
+      - name: Set lowercase repo owner
+        run: echo "REPO_OWNER_LOWERCASE=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       - name: Build and push multiarch
         run: |
           docker buildx build \
             --platform linux/amd64,linux/arm64/v8 \
             --build-arg BUILD_FROM=ghcr.io/home-assistant/{arch}-base-python:3.12 \
-            -t ghcr.io/${{ github.REPO_OWNER_LOWERCASE }}/i2c-addon:${{ env.ADDON_VERSION }} \
-            -t ghcr.io/${{ github.REPO_OWNER_LOWERCASE }}/i2c-addon:latest \
+            -t ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:${{ env.ADDON_VERSION }} \
+            -t ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:latest \
             --push \
             ./addon-i2c
-
-      - name: Push image
-        run: |
-          docker push ghcr.io/${{ env.REPO_OWNER_LOWERCASE }}/i2c-addon:${{ env.ADDON_VERSION }}
