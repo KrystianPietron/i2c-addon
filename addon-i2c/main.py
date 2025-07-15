@@ -7,12 +7,16 @@ from sensors.oledBueYellow0x3D import OledBlueYellow0x3d
 from sensors.oledWhite0x3c import OledWhite0x3c
 
 import logging
+import os, sys
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
+print("Zawartość /dev:")
+print(os.listdir("/dev"))
+print("Czy /dev/i2c-1 istnieje?", os.path.exists("/dev/i2c-1"))
 async def main():
     oled_blue_yellow_0x3d = OledBlueYellow0x3d()
     oled_blue_yellow_0x3c = OledBlueYellow0x3c()
