@@ -1,6 +1,6 @@
 {
   "name": "i2c addon",
-  "version": "1.0.5.139-RC",
+  "version": "1.0.5.140-RC",
   "description": "Obsługa wyświetlaczy i2c",
   "arch": [
     "aarch64"
@@ -12,7 +12,8 @@
   "devices": [
     "/dev/i2c-1",
     "/dev/i2c-13",
-    "/dev/i2c-3"
+    "/dev/i2c-14",
+    "/dev/i2c-15"
   ],
   "url": "https://github.com/KrystianPietron/i2c-addon",
   "slug": "addon-i2c",
