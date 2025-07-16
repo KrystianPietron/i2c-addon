@@ -52,7 +52,7 @@ class OledBlueYellow0x3d:
 
     async def run(self):
         # ✅ Użyj luma.oled I2C
-        serial = i2c(port=14, address=0x3D)  # port=13 jeśli chcesz inny bus
+        serial = i2c(port=1, address=0x3D)  # port=13 jeśli chcesz inny bus
         device = ssd1306(serial, width=128, height=64)
 
         # Opcjonalnie: czyść ekran
