@@ -9,7 +9,8 @@ class Matrix:
     async def matrix_rain(self, duration=10, display_lock=None):
         width = self.display.width
         height = self.display.height
-        font = ImageFont.load_default()
+        font_path = "/app/fonts/roboto.ttf"
+        font = ImageFont.truetype(font_path, 12)
         bbox = font.getbbox("A")
         char_width = bbox[2] - bbox[0]
         char_height = bbox[3] - bbox[1]

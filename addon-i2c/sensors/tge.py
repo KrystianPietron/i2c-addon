@@ -10,7 +10,9 @@ class TGEPriceDisplay:
         self.token = token
         self.entity_id = entity_id
         self.oled = display
-        self.font = ImageFont.load_default()
+        self.font_path = "/app/fonts/roboto.ttf"
+        self.font = ImageFont.truetype(self.font_path, 12)
+
 
     def get_ha_state(self):
         url = f"{self.ha_url}/api/states/{self.entity_id}"

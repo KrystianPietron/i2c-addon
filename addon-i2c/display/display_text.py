@@ -5,7 +5,8 @@ class DisplayText:
         self.display = display
 
     def show_text(self, lines):
-        font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
+        # font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
+        font_path = "/app/fonts/roboto.ttf"
         font = ImageFont.truetype(font_path, 12)
 
         # Utwórz nowy obraz monochromatyczny

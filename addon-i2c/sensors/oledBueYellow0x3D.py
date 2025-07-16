@@ -34,17 +34,17 @@ class OledBlueYellow0x3d:
                 self.base_lines = Networks.network_usage() + Cpu.get_cpu_usage()
                 await asyncio.sleep(4)
 
-                self.base_lines = Networks.network_usage() + Folders.get_disk_folder_usage('krystek')
-                await asyncio.sleep(4)
-
-                self.base_lines = Networks.network_usage() + Folders.get_disk_folder_usage('ilona')
-                await asyncio.sleep(4)
-
-                self.base_lines = Networks.network_usage() + Folders.get_disk_folder_usage('backup')
-                await asyncio.sleep(4)
-
-                self.base_lines = Networks.network_usage() + Folders.get_disk_folder_usage('shared')
-                await asyncio.sleep(4)
+                # self.base_lines = Networks.network_usage() + Folders.get_disk_folder_usage('krystek')
+                # await asyncio.sleep(4)
+                #
+                # self.base_lines = Networks.network_usage() + Folders.get_disk_folder_usage('ilona')
+                # await asyncio.sleep(4)
+                #
+                # self.base_lines = Networks.network_usage() + Folders.get_disk_folder_usage('backup')
+                # await asyncio.sleep(4)
+                #
+                # self.base_lines = Networks.network_usage() + Folders.get_disk_folder_usage('shared')
+                # await asyncio.sleep(4)
 
             except Exception as e:
                 print(f"Błąd w update_data: {e}")
