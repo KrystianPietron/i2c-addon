@@ -1,7 +1,7 @@
 {
-  "name": "i2c addon",
-  "version": "1.0.5.144-RC",
-  "description": "Obsługa wyświetlaczy i2c",
+  "name": "Obsługa wyświetlaczy i2c HAOS",
+  "version": "1.0.5.145-RC",
+  "description": "Obsługa wyświetlaczy i2c HAOS",
   "arch": [
     "aarch64"
   ],
