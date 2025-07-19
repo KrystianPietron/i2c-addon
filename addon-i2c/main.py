@@ -7,7 +7,7 @@ from sensors.oledBueYellow0x3D import OledBlueYellow0x3d
 from sensors.oledWhite0x3c import OledWhite0x3c
 
 import logging
-import os, sys
+import os
 
 logging.basicConfig(
     level=logging.INFO,

@@ -1,10 +1,11 @@
+from display.images import Images
 from luma.core.interface.serial import i2c
 from luma.oled.device import ssd1306
-import os
-import asyncio
-import logging
 from sensors.tge import TGEPriceDisplay
+import asyncio
 import json
+import logging
+import os
 
 
 class OledWhite0x3c:
@@ -12,9 +13,11 @@ class OledWhite0x3c:
         # Inicjalizacja luma.oled z podaniem numeru bussa i adresu
         serial = i2c(port=port, address=address)
         self.device = ssd1306(serial, width=128, height=64)
-
+        self.address = address
         self.IMG_PATH_RASPBERRY = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets', 'raspberry_logo.bmp'))
         self.IMG_PATH_DEBIAN = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets', 'debian_logo.bmp'))
+        self.LOGO_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets', 'home_assistant.bmp'))
+
 
         self.display_lock = asyncio.Lock()
 
@@ -29,6 +32,19 @@ class OledWhite0x3c:
         async with self.display_lock:
             self.device.clear()
             self.device.show()
+        if config.get('startLogo'):
+            images = Images(self.device)
+            try:
+                logging.info(f"🖼️ Witamy w i2c wyświetlacz: {self.address}")
+                while True:
+                    logging.info("Start Logo")
+                    async with self.display_lock:
+                        images.display_image(self.LOGO_PATH)
+                    await asyncio.sleep(10)
+
+            except Exception as e:
+                logging.error(f"Błąd w OledWhite0x3c Start Logo BY: {e}", exc_info=True)
+
         tge = TGEPriceDisplay(self.device, home_assistant_url, home_assistant_token)
 
         try:

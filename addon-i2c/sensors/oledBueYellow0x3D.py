@@ -1,28 +1,48 @@
-import asyncio
+from display.display_text import DisplayText
+from display.images import Images
 from luma.core.interface.serial import i2c
 from luma.oled.device import ssd1306
-
-from display.display_text import DisplayText
 from sensors.cpu_temp import Cpu
 from sensors.folders import Folders
 from sensors.networks import Networks
 from sensors.ram import RamUsage
 from sensors.timer import Timer
+import asyncio
+import json
+import logging
+import os
 
 
 class OledBlueYellow0x3d:
     def __init__(self):
         self.base_lines = []  # dane systemowe
         self.display_text = None
+        self.LOGO_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets', 'home_assistant.bmp'))
 
     async def update_clock(self):
         while True:
             current_time = Timer.get_time()
             lines = [f"{current_time}"] + self.base_lines
             self.display_text.show_text(lines[:6])
-            await asyncio.sleep(1)
+            await asyncio.sleep(0,5)
 
     async def update_data(self):
+        with open('/data/options.json') as f:
+            config = json.load(f)
+
+        if config.get('startLogo'):
+            images = Images(self.device)
+            try:
+                logging.info(f"🖼️ Witamy w i2c wyświetlacz YB: {self.address}")
+                while True:
+                    logging.info("Start Logo")
+                    async with self.display_lock:
+                        images.display_image(self.LOGO_PATH)
+                    await asyncio.sleep(10)
+
+            except Exception as e:
+                logging.error(f"Błąd w OledBlueYellow0x3d Start Logo BY: {e}", exc_info=True)
+
         while True:
             try:
                 self.base_lines = Networks.network_usage() + Folders.get_disk_usage()

@@ -15,6 +15,7 @@ privileged:
   - SYS_RAWIO
 init: true
 options:
+  startLogo: true
   token: tokenTest
   dev-i2c-1-bus: true
   display1_dev1_enable: true
@@ -27,6 +28,7 @@ options:
   display2_dev13_enable: true
   display2_dev13_startAnimation: true
 schema:
+  startLogo: bool
   token: str
   dev-i2c-1-bus: bool
   display1_dev1_enable: bool

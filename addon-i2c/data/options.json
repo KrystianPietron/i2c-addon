@@ -1,4 +1,5 @@
 {
+  "startLogo": true,
   "token": "tokenTest",
   "dev-i2c-1-bus": true,
   "display1_dev1_enable": true,
