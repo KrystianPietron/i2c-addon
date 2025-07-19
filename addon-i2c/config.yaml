@@ -1,5 +1,5 @@
 name: Obsługa wyświetlaczy i2c HAOS
-version: 1.0.5.151-RC
+version: 1.0.5.152-RC
 description: Obsługa wyświetlaczy i2c HAOS
 arch:
   - aarch64
@@ -28,7 +28,7 @@ options:
   display2_dev13_startAnimation: true
 schema:
   token: str
-  dev-i2c-1-bus: bool,
+  dev-i2c-1-bus: bool
   display1_dev1_enable: bool
   display1_dev1_startAnimation: bool
   display2_dev1_enable: bool
