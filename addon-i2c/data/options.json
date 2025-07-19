@@ -1,11 +1,23 @@
 {
   "token": "tokenTest",
   "dev-i2c-1-bus": {
-    "display1": true,
-    "display2": true
+    "display1": {
+      "enable": true,
+      "startAnimation": true
+    },
+    "display2": {
+      "enable": true,
+      "startAnimation": true
+    }
   },
   "dev-i2c-13-bus": {
-    "display1": true,
-    "display2": true
+    "display1": {
+      "enable": true,
+      "startAnimation": true
+    },
+    "display2": {
+      "enable": true,
+      "startAnimation": true
+    }
   }
 }
