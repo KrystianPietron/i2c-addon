@@ -13,6 +13,7 @@ class OledBlueYellow0x3c:
         # Inicjalizacja luma.oled z podaniem numeru bussa i adresu
         serial = i2c(port=port, address=address)
         self.device = ssd1306(serial, width=128, height=64)
+        self.display_lock = asyncio.Lock()
 
         self.IMG_PATH_RASPBERRY = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets', 'raspberry_logo.bmp'))
         self.IMG_PATH_DEBIAN = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets', 'debian_logo.bmp'))

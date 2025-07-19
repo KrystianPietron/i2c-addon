@@ -17,8 +17,6 @@ class OledWhite0x3c:
         self.IMG_PATH_RASPBERRY = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets', 'raspberry_logo.bmp'))
         self.IMG_PATH_DEBIAN = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets', 'debian_logo.bmp'))
         self.LOGO_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets', 'home_assistant.bmp'))
-
-
         self.display_lock = asyncio.Lock()
 
 
@@ -32,18 +30,19 @@ class OledWhite0x3c:
         async with self.display_lock:
             self.device.clear()
             self.device.show()
-        if config.get('startLogo'):
-            images = Images(self.device)
-            try:
-                logging.info(f"🖼️ Witamy w i2c wyświetlacz: {self.address}")
-                while True:
-                    logging.info("Start Logo")
-                    async with self.display_lock:
-                        images.display_image(self.LOGO_PATH)
-                    await asyncio.sleep(10)
+            if config.get('startLogo'):
+                images = Images(self.device)
+                try:
+                    logging.info(f"🖼️ Witamy w i2c wyświetlacz: {self.address}")
+                    while True:
+                        logging.info("Start Logo")
+                        async with self.display_lock:
+                            images.display_image(self.LOGO_PATH)
+                        await asyncio.sleep(10)
 
-            except Exception as e:
-                logging.error(f"Błąd w OledWhite0x3c Start Logo BY: {e}", exc_info=True)
+                except Exception as e:
+                    logging.error(f"Błąd w OledWhite0x3c Start Logo BY: {e}", exc_info=True)
+
 
         tge = TGEPriceDisplay(self.device, home_assistant_url, home_assistant_token)
 
