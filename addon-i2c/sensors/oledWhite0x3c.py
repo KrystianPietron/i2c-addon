@@ -23,7 +23,6 @@ class OledWhite0x3c:
         with open('/data/options.json') as f:
             config = json.load(f)
         home_assistant_url = "http://192.168.1.226:8123"
-        # home_assistant_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJiMjZkMDhmMGM4Nzc0ZTUwOGY0M2JhZGUxMTU1MmZhNSIsImlhdCI6MTc1MjY5NDkwNSwiZXhwIjoyMDY4MDU0OTA1fQ.SNLrxUN7Ix1g5GtQRGdnMWx2uyv9nQ5cWN047Tt0bVE"
         home_assistant_token = config.get("token")
 
         # Czyszczenie ekranu na start

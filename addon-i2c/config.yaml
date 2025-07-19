@@ -1,5 +1,5 @@
 name: Obsługa wyświetlaczy i2c HAOS
-version: 1.0.5.148-RC
+version: 1.0.5.149-RC
 description: Obsługa wyświetlaczy i2c HAOS
 arch:
   - aarch64
@@ -18,9 +18,22 @@ privileged:
 init: true
 options:
   token: tokenTest
-  display1: true
+  "dev-i2c-1-bus": {
+    "display1": true,
+    "display2": true
+  }
+  "dev-i2c-13-bus": {
+    "display1": true,
+    "display2": true
+  }
   display2: true
 schema:
   token: str
-  display1: bool
-  display2: bool
+  "dev-i2c-1-bus": {
+    "display1": bool,
+    "display2": bool
+  }
+  "dev-i2c-13-bus": {
+    "display1": bool,
+    "display2": bool
+  }

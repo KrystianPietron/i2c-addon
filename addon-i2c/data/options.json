@@ -1,5 +1,11 @@
 {
   "token": "tokenTest",
-  "display1": true,
-  "display2": true
+  "dev-i2c-1-bus": {
+    "display1": true,
+    "display2": true
+  },
+  "dev-i2c-13-bus": {
+    "display1": true,
+    "display2": true
+  }
 }
