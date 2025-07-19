@@ -37,4 +37,6 @@ Przygotowanie urządzenia raspberry pi z systemem Home Assistant OS
 
     Dodatek obsługuje w sumie 4 wyświetlacze z adresami 0x3C i 0x3D na każdej szynie po 2
 
+    2. Dodajemy po przez dodanie repo do Add-ons w naszym Home Assistan
+
 
