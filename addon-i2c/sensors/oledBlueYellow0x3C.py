@@ -12,6 +12,8 @@ class OledBlueYellow0x3c:
     def __init__(self, port=1, address=0x3c):
         # Inicjalizacja luma.oled z podaniem numeru bussa i adresu
         serial = i2c(port=port, address=address)
+        self.address = address
+
         self.device = ssd1306(serial, width=128, height=64)
         self.display_lock = asyncio.Lock()
 

@@ -16,6 +16,7 @@ import os
 class OledBlueYellow0x3d:
     def __init__(self):
         serial = i2c(port=1, address=0x3c)
+        self.address = 0x3c
         self.device = ssd1306(serial, width=128, height=64)
         self.display_lock = asyncio.Lock()
 
