@@ -18,11 +18,11 @@ class OledBlueYellow0x3d:
         serial = i2c(port=1, address=0x3c)
         self.address = 0x3c
         self.device = ssd1306(serial, width=128, height=64)
-        self.display_lock = asyncio.Lock()
 
         self.base_lines = []  # dane systemowe
         self.display_text = None
         self.LOGO_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets', 'home_assistant.bmp'))
+        self.display_lock = asyncio.Lock()
 
     async def update_clock(self):
         while True:
@@ -36,17 +36,16 @@ class OledBlueYellow0x3d:
             config = json.load(f)
 
         if config.get('startLogo'):
-            images = Images(self.device)
             try:
+                images = Images(self.device)
                 logging.info(f"🖼️ Witamy w i2c wyświetlacz YB: {self.address}")
-                while True:
-                    logging.info("Start Logo")
+                for _ in range(1):
                     async with self.display_lock:
                         images.display_image(self.LOGO_PATH)
                     await asyncio.sleep(10)
 
             except Exception as e:
-                logging.error(f"Błąd w OledBlueYellow0x3d Start Logo BY: {e}", exc_info=True)
+                logging.error(f"Błąd w OledBlueYellow0x3c Start Logo BY: {e}", exc_info=True)
 
         while True:
             try:

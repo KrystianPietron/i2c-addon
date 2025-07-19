@@ -27,22 +27,19 @@ class OledWhite0x3c:
         home_assistant_token = config.get("token")
 
         # Czyszczenie ekranu na start
-        async with self.display_lock:
-            self.device.clear()
-            self.device.show()
-            if config.get('startLogo'):
+        self.device.clear()
+        self.device.show()
+        if config.get('startLogo'):
+            try:
                 images = Images(self.device)
-                try:
-                    logging.info(f"🖼️ Witamy w i2c wyświetlacz: {self.address}")
-                    while True:
-                        logging.info("Start Logo")
-                        async with self.display_lock:
-                            images.display_image(self.LOGO_PATH)
-                        await asyncio.sleep(10)
+                logging.info(f"🖼️ Witamy w i2c wyświetlacz YB: {self.address}")
+                for _ in range(1):
+                    async with self.display_lock:
+                        images.display_image(self.LOGO_PATH)
+                    await asyncio.sleep(10)
 
-                except Exception as e:
-                    logging.error(f"Błąd w OledWhite0x3c Start Logo BY: {e}", exc_info=True)
-
+            except Exception as e:
+                logging.error(f"Błąd w OledBlueYellow0x3c Start Logo BY: {e}", exc_info=True)
 
         tge = TGEPriceDisplay(self.device, home_assistant_url, home_assistant_token)
 

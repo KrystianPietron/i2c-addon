@@ -15,7 +15,6 @@ class OledBlueYellow0x3c:
         self.address = address
 
         self.device = ssd1306(serial, width=128, height=64)
-        self.display_lock = asyncio.Lock()
 
         self.IMG_PATH_RASPBERRY = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets', 'raspberry_logo.bmp'))
         self.IMG_PATH_DEBIAN = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets', 'debian_logo.bmp'))
@@ -39,8 +38,7 @@ class OledBlueYellow0x3c:
         if config.get('startLogo'):
             try:
                 logging.info(f"🖼️ Witamy w i2c wyświetlacz YB: {self.address}")
-                while True:
-                    logging.info("Start Logo")
+                for _ in range(1):
                     async with self.display_lock:
                         images.display_image(self.LOGO_PATH)
                     await asyncio.sleep(10)
