@@ -18,33 +18,26 @@ privileged:
 init: true
 options:
   token: tokenTest
-  dev-i2c-1-bus:
-    - display1:
-        - enable: true
-        - startAnimation: true
-    - display2:
-        - enable: true
-        - startAnimation: true
-  dev-i2c-13-bus:
-    - display1:
-        - enable: true
-        - startAnimation: true
-    - display2:
-        - enable: true
-        - startAnimation: true
+  dev-i2c-1-bus: true
+  display1_dev1_enable: true
+  display1_dev1_startAnimation: true
+  display2_dev1_enable: true
+  display2_dev1_startAnimation: true
+  dev-i2c-13-bus: true,
+  display1_dev13_enable: true
+  display1_dev13_startAnimation: true
+  display2_dev13_enable: true
+  display2_dev13_startAnimation: true
+
 schema:
   token: str
-  dev-i2c-1-bus:
-    - display1:
-      - enable: bool
-      - startAnimation: bool
-    - display2:
-      - enable: bool
-      - startAnimation: bool
-  dev-i2c-13-bus:
-    - display1:
-      - enable: bool
-      - startAnimation: bool
-    - display2:
-      - enable: bool
-      - startAnimation: bool
+  dev-i2c-1-bus: bool,
+  display1_dev1_enable: bool
+  display1_dev1_startAnimation: bool
+  display2_dev1_enable: bool
+  display2_dev1_startAnimation: bool
+  dev-i2c-13-bus: bool,
+  display1_dev13_enable: bool
+  display1_dev13_startAnimation: bool
+  display2_dev13_enable: bool
+  display2_dev13_startAnimation: bool
