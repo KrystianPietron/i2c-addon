@@ -1,12 +1,10 @@
 name: Obsługa wyświetlaczy i2c HAOS
-version: 1.0.5.147-RC
+version: 1.0.5.148-RC
 description: Obsługa wyświetlaczy i2c HAOS
 arch:
   - aarch64
 startup: services
 boot: auto
-options: {}
-schema: {}
 devices:
   - /dev/i2c-1
   - /dev/i2c-13
@@ -18,3 +16,11 @@ image: ghcr.io/krystianpietron/i2c-addon
 privileged:
   - SYS_RAWIO
 init: true
+options:
+  token: tokenTest
+  display1: true
+  display2: true
+schema:
+  token: str
+  display1: bool
+  display2: bool
