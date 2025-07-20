@@ -23,7 +23,7 @@ class ShowLogo():
         if config.get('startLogo'):
             try:
                 images = Images(self.device)
-                logging.info(f"🖼️ Witamy w i2c wyświetlacz YB: {self.address}")
+                logging.info(f"🖼️ Logo {self.device}")
                 for _ in range(1):
                     async with self.display_lock:
                         images.display_image(self.LOGO_PATH)
