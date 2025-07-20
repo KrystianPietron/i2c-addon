@@ -22,8 +22,10 @@ class OledWhite0x3c:
 
     async def run(self):
 
-        show = ShowLogo()
-        await asyncio.gather(show.showLogo(self.device))
+        show = ShowLogo(self.device)
+        await asyncio.gather(
+            show.showLogo()
+        )
 
         with open('/data/options.json') as f:
             config = json.load(f)

@@ -1,5 +1,5 @@
 name: Obsługa wyświetlaczy i2c HAOS
-version: 1.0.5.159-RC
+version: 1.0.5.160-RC
 description: Obsługa wyświetlaczy i2c HAOS
 arch:
   - aarch64
