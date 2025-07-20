@@ -41,7 +41,7 @@ class OledBlueYellow0x3c:
                 for _ in range(1):
                     async with self.display_lock:
                         images.display_image(self.LOGO_PATH)
-                    await asyncio.sleep(10)
+                    await asyncio.sleep(20)
 
             except Exception as e:
                 logging.error(f"Błąd w OledBlueYellow0x3c Start Logo BY: {e}", exc_info=True)

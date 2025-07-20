@@ -24,6 +24,22 @@ class OledBlueYellow0x3d:
         self.LOGO_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets', 'home_assistant.bmp'))
         self.display_lock = asyncio.Lock()
 
+    async def showLogo(self):
+        with open('/data/options.json') as f:
+           config = json.load(f)
+
+        if config.get('startLogo'):
+           try:
+               images = Images(self.device)
+               logging.info(f"🖼️ Witamy w i2c wyświetlacz YB: {self.address}")
+               for _ in range(1):
+                   async with self.display_lock:
+                       images.display_image(self.LOGO_PATH)
+                   await asyncio.sleep(20)
+
+           except Exception as e:
+               logging.error(f"Błąd w OledBlueYellow0x3c Start Logo BY: {e}", exc_info=True)
+
     async def update_clock(self):
         while True:
             current_time = Timer.get_time()
@@ -32,20 +48,6 @@ class OledBlueYellow0x3d:
             await asyncio.sleep(0,5)
 
     async def update_data(self):
-        with open('/data/options.json') as f:
-            config = json.load(f)
-
-        if config.get('startLogo'):
-            try:
-                images = Images(self.device)
-                logging.info(f"🖼️ Witamy w i2c wyświetlacz YB: {self.address}")
-                for _ in range(1):
-                    async with self.display_lock:
-                        images.display_image(self.LOGO_PATH)
-                    await asyncio.sleep(10)
-
-            except Exception as e:
-                logging.error(f"Błąd w OledBlueYellow0x3c Start Logo BY: {e}", exc_info=True)
 
         while True:
             try:
