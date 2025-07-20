@@ -14,10 +14,6 @@ import os
 
 class OledBlueYellow0x3d:
     def __init__(self):
-        serial = i2c(port=1, address=0x3c)
-        self.address = 0x3c
-        self.device = ssd1306(serial, width=128, height=64)
-
         self.base_lines = []  # dane systemowe
         self.display_text = None
         self.LOGO_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets', 'home_assistant.bmp'))
@@ -69,7 +65,7 @@ class OledBlueYellow0x3d:
         device.clear()
         device.show()  # show() to alias w luma.oled
 
-        show = ShowLogo(self.device)
+        show = ShowLogo(device)
         await asyncio.gather(
             show.showLogo()
         )
