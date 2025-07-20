@@ -22,7 +22,8 @@ class OledWhite0x3c:
 
     async def run(self):
 
-        asyncio.run(self.showLogo())
+        show = ShowLogo()
+        await asyncio.gather(show.showLogo(self.device))
 
         with open('/data/options.json') as f:
             config = json.load(f)
@@ -43,7 +44,3 @@ class OledWhite0x3c:
 
         except Exception as e:
             logging.error(f"Błąd w run_display1 White: {e}", exc_info=True)
-
-    async def showLogo(self):
-        show = ShowLogo()
-        await asyncio.gather(show.showLogo(self.device))
