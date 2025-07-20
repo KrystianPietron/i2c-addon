@@ -7,9 +7,8 @@ from sensors.folders import Folders
 from sensors.networks import Networks
 from sensors.ram import RamUsage
 from sensors.timer import Timer
+from display.showLogo import ShowLogo
 import asyncio
-import json
-import logging
 import os
 
 
@@ -24,21 +23,6 @@ class OledBlueYellow0x3d:
         self.LOGO_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets', 'home_assistant.bmp'))
         self.display_lock = asyncio.Lock()
 
-    async def showLogo(self):
-        with open('/data/options.json') as f:
-           config = json.load(f)
-
-        if config.get('startLogo'):
-           try:
-               images = Images(self.device)
-               logging.info(f"🖼️ Witamy w i2c wyświetlacz YB: {self.address}")
-               for _ in range(1):
-                   async with self.display_lock:
-                       images.display_image(self.LOGO_PATH)
-                   await asyncio.sleep(20)
-
-           except Exception as e:
-               logging.error(f"Błąd w OledBlueYellow0x3c Start Logo BY: {e}", exc_info=True)
 
     async def update_clock(self):
         while True:
@@ -84,6 +68,11 @@ class OledBlueYellow0x3d:
         # Opcjonalnie: czyść ekran
         device.clear()
         device.show()  # show() to alias w luma.oled
+
+        show = ShowLogo(self.device)
+        await asyncio.gather(
+            show.showLogo()
+        )
 
         # ✅ Przekazujemy urządzenie Luma
         self.display_text = DisplayText(device)

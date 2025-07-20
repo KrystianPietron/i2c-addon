@@ -2,6 +2,7 @@ from display.images import Images
 from display.matrix_anim import Matrix
 from luma.core.interface.serial import i2c
 from luma.oled.device import ssd1306
+from display.showLogo import ShowLogo
 import asyncio
 import json
 import logging
@@ -35,16 +36,10 @@ class OledBlueYellow0x3c:
 
         matrix = Matrix(self.device)
         images = Images(self.device)
-        if config.get('startLogo'):
-            try:
-                logging.info(f"🖼️ Witamy w i2c wyświetlacz YB: {self.address}")
-                for _ in range(1):
-                    async with self.display_lock:
-                        images.display_image(self.LOGO_PATH)
-                    await asyncio.sleep(20)
-
-            except Exception as e:
-                logging.error(f"Błąd w OledBlueYellow0x3c Start Logo BY: {e}", exc_info=True)
+        show = ShowLogo(self.device)
+        await asyncio.gather(
+            show.showLogo()
+        )
 
         try:
             logging.info(f"📂 Katalog roboczy: {os.getcwd()}")
