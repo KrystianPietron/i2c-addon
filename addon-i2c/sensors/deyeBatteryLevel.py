@@ -13,14 +13,14 @@ class BatteryLevel:
         self.font_path = "/app/fonts/roboto.ttf"
         self.font = ImageFont.truetype(self.font_path, 12)
 
-    async def get_battery_state(self):
+    def get_battery_state(self):
         url = f"{self.ha_url}/api/states/{self.entity_id}"
         headers = {
             "Authorization": f"Bearer {self.token}",
             "Content-Type": "application/json"
         }
         response = requests.get(url, headers=headers)
-        data = await response.json()
+        data = response.json()
         battery_state = int(data['state'])
         friendly_name = data['attributes'].get('friendly_name', 'Brak nazwy')
         unit = data['attributes'].get('unit_of_measurement', '')
@@ -44,6 +44,6 @@ class BatteryLevel:
     async def draw_battery(self, display_lock=None):
         if display_lock:
             async with display_lock:
-                await self.get_battery_state()
+                self.get_battery_state()
         else:
-            await self.get_battery_state()
+            self.get_battery_state()
