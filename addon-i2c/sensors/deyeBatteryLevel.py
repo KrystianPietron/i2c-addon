@@ -25,21 +25,41 @@ class BatteryLevel:
         friendly_name = data['attributes'].get('friendly_name', 'Brak nazwy')
         unit = data['attributes'].get('unit_of_measurement', '')
         with canvas(self.oled) as draw:
-            # Ikona baterii (lewa strona)
-            x, y = 0, 20
-            draw.rectangle((x, y, x + 20, y + 30), outline="white", fill="black")  # Obudowa
-            draw.rectangle((x + 20, y + 10, x + 22, y + 20), outline="white", fill="black")  # Biegun
+            x, y = 0, 10  # pozycja startowa
+            battery_width = 90
+            battery_height = 30
 
-            # Wypełnienie poziomem na podstawie % (będzie max 4 bloki)
-            level = battery_state // 25  # 0–4
+            # Obudowa baterii
+            draw.rectangle((x, y, x + battery_width, y + battery_height), outline="white", fill="black")
+
+            # Biegun baterii (po prawej)
+            pole_width = 4
+            pole_height = 10
+            draw.rectangle((
+                x + battery_width,
+                y + (battery_height // 2 - pole_height // 2),
+                x + battery_width + pole_width,
+                y + (battery_height // 2 + pole_height // 2)
+            ), outline="white", fill="black")
+
+            # Liczba "bloków" zależna od szerokości
+            block_count = 10
+            block_spacing = 2
+            block_width = (battery_width - (block_count + 1) * block_spacing) // block_count
+            block_height = battery_height - 6
+
+            level = battery_state * block_count // 100  # np. 88% daje 8 bloków
+
             for i in range(level):
-                draw.rectangle((x + 3 + i * 4, y + 3, x + 6 + i * 4, y + 27), outline="white", fill="white")
+                bx = x + block_spacing + i * (block_width + block_spacing)
+                by = y + 3
+                draw.rectangle((bx, by, bx + block_width, by + block_height), outline="white", fill="white")
 
             # Nazwa (prawy górny róg)
             draw.text((32, 0), friendly_name, fill="white")
 
             # Stan baterii (poniżej)
-            draw.text((32, 20), f"{battery_state}{unit}", fill="white")
+            draw.text((96, 40), f"{battery_state}{unit}", fill="white")
 
     async def draw_battery(self, display_lock=None):
         if display_lock:
