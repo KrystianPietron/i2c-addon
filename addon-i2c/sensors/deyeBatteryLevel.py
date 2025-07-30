@@ -20,5 +20,3 @@ class BatteryLevel:
         response = requests.get(url, headers=headers)
         response.raise_for_status()
         logging.info(f"Battery level: {response.json()}")
-
-        return
