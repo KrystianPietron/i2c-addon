@@ -35,7 +35,7 @@ class OledWhite0x3c:
         home_assistant_token = config.get("token")
 
         tge = TGEPriceDisplay(self.device, home_assistant_url, home_assistant_token)
-        battery = BatteryLevel(home_assistant_url, home_assistant_token)
+        battery = BatteryLevel(self.device, home_assistant_url, home_assistant_token)
         logging.info("🖼️ Battery level")
 
 
