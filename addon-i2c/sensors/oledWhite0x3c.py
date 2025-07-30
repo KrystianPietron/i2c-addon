@@ -18,6 +18,7 @@ class OledWhite0x3c:
         self.address = address
         self.IMG_PATH_RASPBERRY = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets', 'raspberry_logo.bmp'))
         self.IMG_PATH_DEBIAN = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets', 'debian_logo.bmp'))
+        self.IMG_PATH_DEYE = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets', 'deye.bmp'))
         self.display_lock = asyncio.Lock()
 
 
@@ -41,15 +42,19 @@ class OledWhite0x3c:
 
         try:
             logging.info(f"📂 Katalog roboczy: {os.getcwd()}")
+            images = Images(self.device)
 
             while True:
                 async with self.display_lock:
+                    images.display_image(self.IMG_PATH_DEYE)
+                await asyncio.sleep(10)
+                async with self.display_lock:
                     await battery.draw_battery()
-                await asyncio.sleep(60)
+                await asyncio.sleep(10)
                 logging.info("🖼️ Wyświetlanie TGE")
                 async with self.display_lock:
                     await tge.draw_once()
-                await asyncio.sleep(60)
+                await asyncio.sleep(10)
 
         except Exception as e:
             logging.error(f"Błąd w run_display1 White: {e}", exc_info=True)
