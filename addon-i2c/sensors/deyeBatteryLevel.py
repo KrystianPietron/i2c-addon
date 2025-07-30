@@ -25,7 +25,7 @@ class BatteryLevel:
         friendly_name = data['attributes'].get('friendly_name', 'Brak nazwy')
         unit = data['attributes'].get('unit_of_measurement', '')
         with canvas(self.oled) as draw:
-            x, y = 0, 10  # pozycja startowa
+            x, y = 0, 20  # pozycja startowa
             battery_width = 80
             battery_height = 30
 
