@@ -2,6 +2,7 @@ from display.images import Images
 from luma.core.interface.serial import i2c
 from luma.oled.device import ssd1306
 from sensors.tge import TGEPriceDisplay
+from sensors.deyeBatteryLevel import BatteryLevel
 from display.showLogo import ShowLogo
 import asyncio
 import logging
@@ -34,11 +35,15 @@ class OledWhite0x3c:
         home_assistant_token = config.get("token")
 
         tge = TGEPriceDisplay(self.device, home_assistant_url, home_assistant_token)
+        battery = BatteryLevel(home_assistant_url, home_assistant_token)
+        logging.info("🖼️ Battery level")
+        battery.get_battery_state()
 
         try:
             logging.info(f"📂 Katalog roboczy: {os.getcwd()}")
 
             while True:
+
                 logging.info("🖼️ Wyświetlanie TGE")
                 async with self.display_lock:
                     await tge.draw_once()
