@@ -59,7 +59,7 @@ class BatteryLevel:
             draw.text((32, 0), friendly_name, fill="white")
 
             # Stan baterii (poniżej)
-            draw.text((96, 40), f"{battery_state}{unit}", fill="white")
+            draw.text((96, 30), f"{battery_state}{unit}", fill="white")
 
     async def draw_battery(self, display_lock=None):
         if display_lock:
