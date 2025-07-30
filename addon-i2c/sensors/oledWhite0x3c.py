@@ -37,13 +37,15 @@ class OledWhite0x3c:
         tge = TGEPriceDisplay(self.device, home_assistant_url, home_assistant_token)
         battery = BatteryLevel(home_assistant_url, home_assistant_token)
         logging.info("🖼️ Battery level")
-        battery.get_battery_state()
+
 
         try:
             logging.info(f"📂 Katalog roboczy: {os.getcwd()}")
 
             while True:
-
+                async with self.display_lock:
+                    await battery.draw_battery()
+                await asyncio.sleep(60)
                 logging.info("🖼️ Wyświetlanie TGE")
                 async with self.display_lock:
                     await tge.draw_once()
