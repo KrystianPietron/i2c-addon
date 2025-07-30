@@ -26,7 +26,7 @@ class BatteryLevel:
         unit = data['attributes'].get('unit_of_measurement', '')
         with canvas(self.oled) as draw:
             x, y = 0, 10  # pozycja startowa
-            battery_width = 90
+            battery_width = 80
             battery_height = 30
 
             # Obudowa baterii
