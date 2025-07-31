@@ -48,7 +48,9 @@ class BatteryLevel:
             block_width = (battery_width - (block_count + 1) * block_spacing) // block_count
             block_height = battery_height - 6
 
-            level = battery_state * block_count // 100  # np. 88% daje 8 bloków
+            level = battery_state // (100 // block_count)
+            if battery_state < 100 and battery_state % (100 // block_count) == 0:
+                level -= 1
 
             for i in range(level):
                 bx = x + block_spacing + i * (block_width + block_spacing)
