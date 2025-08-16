@@ -27,7 +27,7 @@ class BatteryLevel:
         with canvas(self.oled) as draw:
             if data:
                 x, y = 0, 25  # pozycja startowa
-                battery_width = 90
+                battery_width = 92
                 battery_height = 30
 
                 # Obudowa baterii
