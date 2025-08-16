@@ -25,45 +25,47 @@ class BatteryLevel:
         friendly_name = data['attributes'].get('friendly_name', 'Brak nazwy')
         unit = data['attributes'].get('unit_of_measurement', '')
         with canvas(self.oled) as draw:
-            x, y = 0, 20  # pozycja startowa
-            battery_width = 90
-            battery_height = 30
+            if data:
+                x, y = 0, 20  # pozycja startowa
+                battery_width = 90
+                battery_height = 30
 
-            # Obudowa baterii
-            draw.rectangle((x, y, x + battery_width, y + battery_height), outline="white", fill="black")
+                # Obudowa baterii
+                draw.rectangle((x, y, x + battery_width, y + battery_height), outline="white", fill="black")
 
-            # Biegun baterii (po prawej)
-            pole_width = 4
-            pole_height = 10
-            draw.rectangle((
-                x + battery_width,
-                y + (battery_height // 2 - pole_height // 2),
-                x + battery_width + pole_width,
-                y + (battery_height // 2 + pole_height // 2)
-            ), outline="white", fill="black")
+                # Biegun baterii (po prawej)
+                pole_width = 5
+                pole_height = 10
+                draw.rectangle((
+                    x + battery_width,
+                    y + (battery_height // 2 - pole_height // 2),
+                    x + battery_width + pole_width,
+                    y + (battery_height // 2 + pole_height // 2)
+                ), outline="white", fill="black")
 
-            # Liczba "bloków" zależna od szerokości
-            block_count = 10
-            block_spacing = 2
-            block_width = (battery_width - (block_count + 1) * block_spacing) // block_count
-            block_height = battery_height - 6
+                # Liczba "bloków" zależna od szerokości
+                block_count = 10
+                block_spacing = 2
+                block_width = (battery_width - (block_count + 1) * block_spacing) // block_count
+                block_height = battery_height - 6
 
-            if battery_state >= 90:
-                level = 10
+                if battery_state >= 90:
+                    level = 10
+                else:
+                    level = battery_state // 10
+
+                for i in range(level):
+                    bx = x + block_spacing + i * (block_width + block_spacing)
+                    by = y + 3
+                    draw.rectangle((bx, by, bx + block_width, by + block_height), outline="white", fill="white")
+
+                # Nazwa (prawy górny róg)
+                draw.text((32, 0), 'DEYE stan baterii', fill="white")
+
+                # Stan baterii (poniżej)
+                draw.text((96, 29), f"{battery_state}{unit}", fill="white")
             else:
-                level = battery_state // 10
-
-            for i in range(level):
-                bx = x + block_spacing + i * (block_width + block_spacing)
-                by = y + 3
-                draw.rectangle((bx, by, bx + block_width, by + block_height), outline="white", fill="white")
-
-            # Nazwa (prawy górny róg)
-            draw.text((32, 0), 'DEYE stan baterii', fill="white")
-
-            # Stan baterii (poniżej)
-            draw.text((96, 29), f"{battery_state}{unit}", fill="white")
-
+                draw.text((32, 0), 'DEYE stan bateria', fill="white")
     async def draw_battery(self, display_lock=None):
         if display_lock:
             async with display_lock:
