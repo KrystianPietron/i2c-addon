@@ -26,7 +26,7 @@ class BatteryLevel:
         unit = data['attributes'].get('unit_of_measurement', '')
         with canvas(self.oled) as draw:
             if data:
-                x, y = 0, 20  # pozycja startowa
+                x, y = 0, 25  # pozycja startowa
                 battery_width = 90
                 battery_height = 30
 
