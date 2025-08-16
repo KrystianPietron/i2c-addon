@@ -34,7 +34,7 @@ class BatteryLevel:
                 draw.rectangle((x, y, x + battery_width, y + battery_height), outline="white", fill="black")
 
                 # Biegun baterii (po prawej)
-                pole_width = 6
+                pole_width = 4
                 pole_height = 10
                 draw.rectangle((
                     x + battery_width,
@@ -46,7 +46,7 @@ class BatteryLevel:
                 # Liczba "bloków" zależna od szerokości
                 block_count = 10
                 block_spacing = 2
-                block_width = (battery_width - (block_count + 1) * block_spacing) // block_count
+                block_width = (battery_width - (block_count * block_spacing)) // block_count
                 block_height = battery_height - 6
 
                 if battery_state >= 90:
