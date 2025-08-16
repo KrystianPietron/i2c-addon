@@ -60,7 +60,7 @@ class BatteryLevel:
                     draw.rectangle((bx, by, bx + block_width, by + block_height), outline="white", fill="white")
 
                 # Nazwa (prawy górny róg)
-                draw.text((32, 0), 'DEYE stan baterii', fill="white")
+                draw.text((22, 0), 'DEYE stan baterii', fill="white")
 
                 # Stan baterii (poniżej)
                 draw.text((99, 34), f"{battery_state}{unit}", fill="white")
