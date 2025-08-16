@@ -34,7 +34,7 @@ class BatteryLevel:
                 draw.rectangle((x, y, x + battery_width, y + battery_height), outline="white", fill="black")
 
                 # Biegun baterii (po prawej)
-                pole_width = 5
+                pole_width = 6
                 pole_height = 10
                 draw.rectangle((
                     x + battery_width,
@@ -65,7 +65,7 @@ class BatteryLevel:
                 # Stan baterii (poniżej)
                 draw.text((96, 29), f"{battery_state}{unit}", fill="white")
             else:
-                draw.text((32, 0), 'DEYE stan bateria', fill="white")
+                draw.text((16, 0), 'DEYE Brak danych o baterii', fill="white")
     async def draw_battery(self, display_lock=None):
         if display_lock:
             async with display_lock:
